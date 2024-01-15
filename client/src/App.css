@@ -1,0 +1,54 @@
+.App {
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  background-color: rgb(32, 32, 32);
+}
+
+section {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+h1 {
+  margin: 0 auto;
+  text-align: center;
+  color: white;
+}
+
+.info {
+  flex-basis: 50%;
+  background-color: rgb(32, 32, 32);
+  margin: 32px;
+  padding: 32px 16px;
+  border-radius: 16px;
+}
+
+h4 {
+  margin: 0;
+}
+
+.login {
+  flex-basis: 30%;
+  background-color: rgb(32, 32, 32);
+  margin: 32px;
+  padding: 32px 16px;
+  border-radius: 16px;
+}
+
+.login:hover {
+  cursor: pointer;
+}
+
+.login h4 {
+  text-align: center;
+}
+
+.spotify-logo {
+  display: block;
+  margin: 32px auto 16px auto;
+  width: 128px;
+  height: auto;
+}
