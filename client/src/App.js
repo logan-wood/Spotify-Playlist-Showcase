@@ -1,9 +1,12 @@
 import spotifyLogo from './images/spotify_logo.png'
 import './App.css';
+import { useNavigate } from 'react-router-dom';
 
 function App() {
+  const navigate = useNavigate();
+
   const spotifyLogin = () => {
-    console.log('Logging in with spotify')
+    return navigate("/dashboard")
   }
 
   return (
