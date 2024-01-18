@@ -1,12 +1,20 @@
 import spotifyLogo from './images/spotify_logo.png'
 import './App.css';
-import { useNavigate } from 'react-router-dom';
 
 function App() {
-  const navigate = useNavigate();
+  const spotifyLogin = async () => {
+    try {
+      // get spotify login url
+      const response = await fetch(process.env.REACT_APP_SERVER_DOMAIN + '/auth')
+    
+      // get url from response
+      const responseData = await response.json()
 
-  const spotifyLogin = () => {
-    return navigate("/dashboard")
+      // navigate to spotify login
+      window.location.href = responseData
+    } catch (error) {
+      console.error('An error occured: ' + error)
+    }
   }
 
   return (
