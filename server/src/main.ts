@@ -6,7 +6,7 @@ async function bootstrap() {
   
   // middleware
   app.enableCors();
-  app.use(cookieParser);
+  app.use(cookieParser());
 
   await app.listen(5000);
 }

@@ -1,5 +1,7 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { Response } from 'express';
+
 
 @Controller('auth')
 export class AuthController {
@@ -11,7 +13,7 @@ export class AuthController {
   }
 
   @Get('callback')
-  handleCallback(@Query() params: any): Promise<string> {
-    return this.authService.handleCallback(params)
+  handleCallback(@Query() params: any, @Res({ passthrough: true }) response: Response): Promise<string> {
+    return this.authService.handleCallback(params, response);
   }
 }

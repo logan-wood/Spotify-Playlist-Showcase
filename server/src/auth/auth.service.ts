@@ -1,6 +1,7 @@
-import { HttpException, HttpStatus, Injectable, NotFoundException, Param, Redirect, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Res, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
+import { Response } from 'express';
 
 
 @Injectable()
@@ -8,6 +9,7 @@ export class AuthService {
     client_id: string;
     client_secret: string;
     redirect_uri: string;
+    client_domain: string;
     
     constructor(private configService: ConfigService) {
         //get environment variables, throw error if they dont exist
@@ -15,6 +17,7 @@ export class AuthService {
             this.client_id = this.configService.get<string>('SPOTIFY_CLIENT_ID');
             this.client_secret = this.configService.get<string>('SPOTIFY_CLIENT_SECRET');
             this.redirect_uri = this.configService.get<string>('SPOTIFY_REDIRECT_URI');
+            this.client_domain = this.configService.get<string>('CLIENT_DOMAIN');
         } catch(e) {
             throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -37,7 +40,7 @@ export class AuthService {
         return login_url;
     }
 
-    async handleCallback(params: any): Promise<string> {
+    async handleCallback(params: any, @Res({ passthrough: true }) response: Response): Promise<string> {
         //get url parameters, check if error exists, handle accordingly
         if (params.error != null) {
             console.log(params.error);
@@ -54,7 +57,7 @@ export class AuthService {
 
         // POST request, exchange code for for authorization token and refresh token
         try {
-            const response = await fetch('https://accounts.spotify.com/api/token', {
+            const spotifyResponse = await fetch('https://accounts.spotify.com/api/token', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
@@ -63,12 +66,19 @@ export class AuthService {
                 body: data.toString()
             });
 
-            const responseData = await response.json();
+            const responseData = await spotifyResponse.json();
 
             console.log(responseData);
 
-            // return frontend url to controller to redirect user???
-            return 'Success!';
+            response.cookie('isLoggedIn', true);
+            response.cookie('identifier', 'abcdefghi');
+
+            // figure out a way to correlate an ID to user (SQL database?)
+
+            // redirect user
+            response.redirect(this.client_domain + '/dashboard')
+
+            return 'Successly logged user in';
         } catch (error) {
             console.error("An error occured: " + error);
             throw new Error("An error occured in the callback function")

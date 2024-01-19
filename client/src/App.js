@@ -21,7 +21,7 @@ function App() {
     <div className="App">
       <nav>
         <h4>Showcaser</h4>
-        <a>About</a>
+        <button href="#">About</button>
       </nav>
       
       <section>
@@ -31,7 +31,7 @@ function App() {
         </div>
         
         <div className="login" onClick={spotifyLogin} >
-          <img src={spotifyLogo} className="spotify-logo"></img>
+          <img src={spotifyLogo} className="spotify-logo" alt="Spotify Login"></img>
           <h4>Login With Spotify</h4>
         </div>
       </section>
