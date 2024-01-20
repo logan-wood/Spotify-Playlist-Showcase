@@ -2,6 +2,8 @@ import { HttpException, HttpStatus, Injectable, Res, UnauthorizedException } fro
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
 import { Response } from 'express';
+import { UsersService } from 'src/users/users.service';
+import { User } from 'src/users/user.entity';
 
 
 @Injectable()
@@ -11,7 +13,7 @@ export class AuthService {
     redirect_uri: string;
     client_domain: string;
     
-    constructor(private configService: ConfigService) {
+    constructor(private configService: ConfigService, private readonly usersService: UsersService   ) {
         //get environment variables, throw error if they dont exist
         try {
             this.client_id = this.configService.get<string>('SPOTIFY_CLIENT_ID');
@@ -68,17 +70,25 @@ export class AuthService {
 
             const responseData = await spotifyResponse.json();
 
-            console.log(responseData);
+            // create unique cookie identifier
+            const cookieValue = randomUUID();
 
             response.cookie('isLoggedIn', true);
-            response.cookie('identifier', 'abcdefghi');
+            response.cookie('identifier', cookieValue);
 
             // figure out a way to correlate an ID to user (SQL database?)
+            var newUser: User = new User()
+            newUser.access_token = responseData.access_token
+            newUser.refresh_token = responseData.refresh_token
+            newUser.username = 'Test name'
+            newUser.spotify_cookie = cookieValue
+            
+            this.usersService.createOne(newUser)
 
             // redirect user
             response.redirect(this.client_domain + '/dashboard')
 
-            return 'Successly logged user in';
+            return;
         } catch (error) {
             console.error("An error occured: " + error);
             throw new Error("An error occured in the callback function")
