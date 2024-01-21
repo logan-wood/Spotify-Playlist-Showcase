@@ -1,9 +1,13 @@
-import { HttpException, HttpStatus, Injectable, Res, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, InternalServerErrorException, Res, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
 import { Response } from 'express';
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { SpotifyService } from 'src/spotify/spotify.service';
+import { SpotifyProfile } from 'src/spotify/spotify.types';
 
 
 @Injectable()
@@ -13,7 +17,9 @@ export class AuthService {
     redirect_uri: string;
     client_domain: string;
     
-    constructor(private configService: ConfigService, private readonly usersService: UsersService   ) {
+    constructor(private configService: ConfigService, 
+        private readonly usersService: UsersService,
+        @InjectRepository(User) private readonly usersRepository: Repository<User>) {
         //get environment variables, throw error if they dont exist
         try {
             this.client_id = this.configService.get<string>('SPOTIFY_CLIENT_ID');
@@ -27,7 +33,7 @@ export class AuthService {
 
     getLoginUrl(): URL {
         const state: string = randomUUID();
-        const scope: string = 'user-read-private';
+        const scope: string = 'user-read-private user-read-email';
          
         // construct url        
         var login_url: URL = new URL('https://accounts.spotify.com/authorize')
@@ -70,21 +76,48 @@ export class AuthService {
 
             const responseData = await spotifyResponse.json();
 
+            // Access token has been acquired, get user profile
+            // One off call to spotify API, since we know the access token is valid
+            const spotifyProfileResponse = await fetch('https://api.spotify.com/v1/me/', {
+                method: 'GET', 
+                headers: { Authorization: `Bearer ${responseData.access_token}`},
+                credentials: 'include'
+            });
+            const spotifyProfile: SpotifyProfile = await spotifyProfileResponse.json()
+
             // create unique cookie identifier
             const cookieValue = randomUUID();
-
             response.cookie('identifier', cookieValue, {
                 maxAge: 2629746000
             });
 
-            // figure out a way to correlate an ID to user (SQL database?)
-            var newUser: User = new User()
-            newUser.access_token = responseData.access_token
-            newUser.refresh_token = responseData.refresh_token
-            newUser.username = 'Test name'
-            newUser.spotify_cookie = cookieValue
-            
-            this.usersService.createOne(newUser)
+            // check whether user exists in database
+            const existingUser = await this.usersService.findOneBySpotifyId(spotifyProfile.id)
+            if (existingUser != null) {
+                console.log('User already exists')
+                console.log(existingUser)
+                
+                // update access_token and refresh_token
+                this.usersService.udpateRefreshToken(existingUser, responseData.refresh_token)
+            } else {
+                console.log('Detected new user, adding to database...')
+                // create new user in DB
+                try {
+                    const newUser = this.usersRepository.create({
+                        spotify_id: spotifyProfile.id,
+                        username: spotifyProfile.display_name,
+                        spotify_cookie: cookieValue,
+                        access_token: responseData.access_token,
+                        access_token_expires_on: new Date(Date.now() + 60 * 60 * 1000), // 1 hour from now
+                        refresh_token: responseData.refresh_token
+                    })
+
+                    this.usersService.createOne(newUser)
+                } catch (error) {
+                    console.error('There was an error creating the new user entity: ' + error.message);
+                    throw new InternalServerErrorException('There was an error creating a new user')
+                }
+            }
 
             // redirect user
             response.redirect(this.client_domain + '/dashboard')
@@ -92,7 +125,7 @@ export class AuthService {
             return;
         } catch (error) {
             console.error("An error occured: " + error);
-            throw new Error("An error occured in the callback function")
+            throw new InternalServerErrorException("An error occured in the callback function")
         }
     }
 }

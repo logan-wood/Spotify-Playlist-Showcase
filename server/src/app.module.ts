@@ -7,6 +7,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersController } from './users/users.controller';
 import { UsersService } from './users/users.service';
 import { UsersModule } from './users/users.module';
+import { SpotifyController } from './spotify/spotify.controller';
+import { SpotifyService } from './spotify/spotify.service';
 
 @Module({
   imports: [AuthModule, ConfigModule.forRoot(), TypeOrmModule.forRoot({
@@ -19,7 +21,7 @@ import { UsersModule } from './users/users.module';
     autoLoadEntities: true,
     synchronize: false
   }), UsersModule],
-  controllers: [AppController, UsersController],
-  providers: [AppService, UsersService],
+  controllers: [AppController, UsersController, SpotifyController],
+  providers: [AppService, UsersService, SpotifyService],
 })
 export class AppModule {}
