@@ -73,8 +73,9 @@ export class AuthService {
             // create unique cookie identifier
             const cookieValue = randomUUID();
 
-            response.cookie('isLoggedIn', true);
-            response.cookie('identifier', cookieValue);
+            response.cookie('identifier', cookieValue, {
+                maxAge: 2629746000
+            });
 
             // figure out a way to correlate an ID to user (SQL database?)
             var newUser: User = new User()

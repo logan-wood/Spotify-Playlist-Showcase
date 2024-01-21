@@ -1,7 +1,8 @@
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, TableCheck } from "typeorm";
 import { User } from "./user.entity";
+import { Request } from "express";
 
 @Injectable()
 export class UsersService {
@@ -15,6 +16,19 @@ export class UsersService {
 
     findOne(id: number): Promise<User> {
         return this.usersRepository.findOneBy({ id });
+    }
+    
+    async findOneBySpotifyCookie(request: Request): Promise<User> {
+        try {
+            const spotify_cookie = request.cookies.identifier;
+
+            
+
+            return await this.usersRepository.findOneBy({ spotify_cookie });
+        } catch (error) {
+            throw new NotFoundException('Spotify Cookie Not Found');
+        }
+
     }
 
     async remove(id: number): Promise<void> {

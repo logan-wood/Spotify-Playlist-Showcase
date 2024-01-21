@@ -1,6 +1,7 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Req } from '@nestjs/common';
 import { User } from './user.entity';
 import { UsersService } from './users.service';
+import { Request } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -9,6 +10,11 @@ export class UsersController {
     @Get()
     async getAll(): Promise<User[]> {
         return await this.usersService.findAll(); 
+    }
+
+    @Get('fromCookie')
+    async getFromCookie(@Req() request: Request): Promise<User> {
+        return await this.usersService.findOneBySpotifyCookie(request);
     }
 
 }
