@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, InternalServerErrorException, Res, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException, Res, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
 import { Response } from 'express';
@@ -6,7 +6,6 @@ import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { SpotifyService } from 'src/spotify/spotify.service';
 import { SpotifyProfile } from 'src/spotify/spotify.types';
 
 
@@ -26,8 +25,9 @@ export class AuthService {
             this.client_secret = this.configService.get<string>('SPOTIFY_CLIENT_SECRET');
             this.redirect_uri = this.configService.get<string>('SPOTIFY_REDIRECT_URI');
             this.client_domain = this.configService.get<string>('CLIENT_DOMAIN');
-        } catch(e) {
-            throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch(error) {
+            console.error('Unable to find environment variables: ' + error.message);
+            throw new NotFoundException('environment variables not found');
         }
     }
 
@@ -85,22 +85,23 @@ export class AuthService {
             });
             const spotifyProfile: SpotifyProfile = await spotifyProfileResponse.json()
 
-            // create unique cookie identifier
-            const cookieValue = randomUUID();
-            response.cookie('identifier', cookieValue, {
-                maxAge: 2629746000
-            });
-
             // check whether user exists in database
             const existingUser = await this.usersService.findOneBySpotifyId(spotifyProfile.id)
             if (existingUser != null) {
-                console.log('User already exists')
-                console.log(existingUser)
+                // console.log('Detected existing user, updating access_token and refresh_token')
                 
                 // update access_token and refresh_token
                 this.usersService.udpateRefreshToken(existingUser, responseData.refresh_token)
+                this.usersService.udpateAccessToken(existingUser, responseData.access_token)
             } else {
-                console.log('Detected new user, adding to database...')
+                // console.log('Detected new user, adding to database...')
+                
+                // create unique cookie identifier
+                const cookieValue = randomUUID();
+                response.cookie('spotify_cookie', cookieValue, {
+                    maxAge: 2629746000
+                });
+
                 // create new user in DB
                 try {
                     const newUser = this.usersRepository.create({

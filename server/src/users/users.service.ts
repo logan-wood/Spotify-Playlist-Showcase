@@ -18,9 +18,15 @@ export class UsersService {
         return this.usersRepository.findOneBy({ id });
     }
     
+    /**
+     * This function gets the currently logged in user
+     * 
+     * @param request - The request object from the controller, the cookie will be extracted from this
+     * @returns - The user associated to the cookie in the request
+     */
     async findOneBySpotifyCookie(request: Request): Promise<User> {
         try {
-            const spotify_cookie = request.cookies.identifier;
+            const spotify_cookie = request.cookies.spotify_cookie;
 
             return await this.usersRepository.findOneBy({ spotify_cookie });
         } catch (error) {
@@ -49,14 +55,34 @@ export class UsersService {
         }
     }
 
-    udpateRefreshToken(user: User, refresh_token: string) {
-        console.log(user.refresh_token);
+    /**
+     * 
+     * @param user the user object to be updates
+     * @param refresh_token the new refresh token
+     * @returns the user object with the updated refresh token if successfull, or throws an error
+     */
+    async udpateRefreshToken(user: User, refresh_token: string): Promise<User> {
         user.refresh_token = refresh_token;
         
         try {
-            this.usersRepository.save(user);
+            await this.usersRepository.save(user);
+
+            return user
         } catch(error) {
             console.error('Failed to update refresh_token in database: ' + error.message);
+            throw new InternalServerErrorException('An internal server error occured');
+        }
+    }
+
+    async udpateAccessToken(user: User, access_token: string): Promise<User> {
+        user.access_token = access_token;
+        
+        try {
+            await this.usersRepository.save(user);
+           
+            return user
+        } catch(error) {
+            console.error('Failed to update access_token in database: ' + error.message);
             throw new InternalServerErrorException('An internal server error occured');
         }
     }
