@@ -1,0 +1,81 @@
+$background-color: rgb(28, 29, 28);
+$background-secondary-color: rgb(54, 56, 54);
+$primary-color: #18d860;
+$default-font-color: white;
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: $default-font-color;
+
+  background-color:$background-color;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding: 16px;
+  background-color: $background-secondary-color;
+
+  h4 {
+    margin: 0 32px;
+  }
+}
+
+nav button {
+  margin: auto 32px;
+  height: 32px;
+  padding: 8px 16px;
+  background-color: $primary-color;
+  color: $default-font-color;
+  border: none;
+}
+
+section {
+  display: flex;
+  margin: 0 128px;
+  
+  * {
+    display: flex;
+    flex-direction: column;
+    margin: 0 32px;
+    background-color: $background-secondary-color;
+    border-radius: 16px;
+  }
+}
+
+.info {
+  flex: 0.5;
+
+  h1 {
+    margin: 32px; 
+  }
+}
+
+.login {
+  flex: 1;
+
+  img {
+    $size: 128px;
+    width: $size;
+    height: $size;
+    margin: 32px auto 0 auto;
+  }
+
+  h4 {
+    margin: 32px auto;
+  }
+} .login:hover {
+  cursor: pointer;
+}
