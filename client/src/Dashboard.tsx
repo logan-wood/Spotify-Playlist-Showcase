@@ -3,22 +3,16 @@ import { User } from "./@types/user";
 import ErrorComponent from "./components/ErrorComponent";
 import './styles/dashboard.scss';
 import Nav from "./components/Navigation";
+import { getLoggedInUser } from "./utils/userUtils";
 
 function Dashboard() {
     // state variables
     const [error, setError] = useState<string>('');
     const [isLoading, setIsLoading] = useState<Boolean>(true)
-    const [user, setUser] = useState<User>();
+    const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
-        try {
-            setUser(JSON.parse(localStorage.getItem('user') as string));
-        } catch {
-            setError('There was an error loading your profile.');
-        }
-        console.log('Dashboard(): ' + user?.username);
-
-        setIsLoading(false);
+        getLoggedInUser(setUser, setError, setIsLoading)
     }, [])
     
     return (

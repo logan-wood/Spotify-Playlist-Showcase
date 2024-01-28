@@ -1,9 +1,27 @@
-export interface SpotifyProfile {
+export type SpotifyProfile = {
     display_name: string,
     id: string,
     images: Array<{
         url: string,
-        height: number,
-        width: number
+        height: number | null,
+        width: number | null
     }>
+}
+
+export type Playlist = {
+    name: string,
+    description: string,
+    external_urls: {
+        spotify: string
+    },
+    id: string,
+    images: Array<{
+        url: string,
+        height: number | null,
+        width: number | null
+    }>,
+    tracks: {
+        href: string,
+        total: number
+    }
 }

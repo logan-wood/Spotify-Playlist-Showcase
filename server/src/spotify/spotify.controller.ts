@@ -1,6 +1,6 @@
 import { Controller, Get, Query, Req } from '@nestjs/common';
 import { SpotifyService } from './spotify.service';
-import { SpotifyProfile } from './spotify.types';
+import { Playlist, SpotifyProfile } from './spotify.types';
 import { User } from 'src/users/user.entity';
 import { Request } from 'express';
 import { UsersService } from 'src/users/users.service';
@@ -13,7 +13,7 @@ export class SpotifyController {
     @Get()
     async getCurrrentUserProfile(@Req() request: Request): Promise<SpotifyProfile> {
         // get current user profile
-        const spotifyCookie = await this.usersService.findOneBySpotifyCookie(request)
+        const spotifyCookie = await this.usersService.findOneBySpotifyCookie(request);
 
         // get requested data
         return await this.spotifyService.getProfileByUser(spotifyCookie);
@@ -22,9 +22,16 @@ export class SpotifyController {
     @Get('getNewAccessToken')
     async getNewAccessToken(@Req() request: Request): Promise<User> {
         // get current user profile
-        const currentUser = await this.usersService.findOneBySpotifyCookie(request)
+        const currentUser = await this.usersService.findOneBySpotifyCookie(request);
 
         // get requested data
         return await this.spotifyService.getNewAccessToken(currentUser);
+    }
+
+    @Get('playlists')
+    async getPlaylists(@Req() request: Request): Promise<Playlist[]> {
+        const currentUser = await this.usersService.findOneBySpotifyCookie(request);
+
+        return await this.spotifyService.getPlaylists(currentUser);
     }
 }
