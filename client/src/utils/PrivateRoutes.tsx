@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
 import { User } from '../@types/user';
-import { isUserLoggedIn } from './userUtils';
+import { getLoggedInUser } from './userUtils';
 
 const PrivateRoutes = () => {
     const [error, setError] = useState<string>('');
@@ -10,7 +10,8 @@ const PrivateRoutes = () => {
 
     // set user object if not null
     useEffect(() => {
-        isUserLoggedIn(setUser, setError, setIsLoading)
+        getLoggedInUser(setUser, setError)
+        setIsLoading(false);
     }, [])
 
     if (isLoading) {

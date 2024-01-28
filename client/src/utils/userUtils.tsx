@@ -1,16 +1,12 @@
 import { User } from "../@types/user";
 
-export const getLoggedInUser = (setUser: React.Dispatch<User | null>, setError: React.Dispatch<string>, setIsLoading: React.Dispatch<boolean>) => {
-    try {
-        setUser(JSON.parse(localStorage.getItem('user') as string));
-    } catch {
-        setError('There was an error loading your profile.');
-    }
-
-    setIsLoading(false);
-}
-
-export const isUserLoggedIn = (setUser: React.Dispatch<User | null>, setError: React.Dispatch<string>, setIsLoading: React.Dispatch<boolean>) => {
+/**
+ * This function updates the 'user' state in a component by retrieving a user from localStorage. If no user is found, an error is generated???
+ * 
+ * @param setUser used to update the 'user' state
+ * @param setError user to update the 'error' state is an error occurs
+ */
+export const getLoggedInUser = (setUser: React.Dispatch<User | null>, setError: React.Dispatch<string>): void => {
     const userString = localStorage.getItem('user');
 
         if (userString) {
@@ -19,6 +15,14 @@ export const isUserLoggedIn = (setUser: React.Dispatch<User | null>, setError: R
         } else {
             setError('There was an error checking if the user is logged in.')
         }
+}
 
-        setIsLoading(false);
+export const isUserLoggedIn = (): boolean => {
+    const userString = localStorage.getItem('user');
+
+    if (userString != '' && userString != undefined) {
+        return true;
+    }
+
+    return false;
 }

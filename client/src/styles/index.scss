@@ -18,7 +18,6 @@ code {
 }
 
 section {
-  display: flex;
   margin: 0 128px;
   
   * {
@@ -53,4 +52,5 @@ section {
   }
 } .login:hover {
   cursor: pointer;
+  background-color: $background-secondary-color-hover;
 }

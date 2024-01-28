@@ -3,3 +3,33 @@
 h1 {
     text-align: center;
 }
+
+.playlists {
+    display: inline-grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: auto;
+    gap: 16px;
+}
+
+.playlist-preview {
+    justify-items: center;
+
+    background-color: $background-secondary-color;
+    border-radius: 16px;
+
+    h4 {
+        max-width: 80%;
+        margin: 16px auto 0 auto;
+    }
+
+    img {
+        height: 200px;
+        width: 200px;
+        object-fit: cover;
+        object-position: center;
+        margin: 16px auto;
+    }
+} .playlist-preview:hover {
+    cursor: pointer;
+    background-color: $background-secondary-color-hover;
+}

@@ -1,8 +1,11 @@
 import Nav from './components/Navigation'
 import spotifyLogo from './images/spotify_logo.png'
 import './styles/index.scss'
+import { isUserLoggedIn } from './utils/userUtils'
 
 function App() {
+  const userLoggedIn: boolean = isUserLoggedIn()
+  
   const spotifyLogin = async () => {
     try {
       // get spotify login url
@@ -19,9 +22,10 @@ function App() {
     }
   }
 
+
   return (
     <div className="App">
-      <Nav />
+      <Nav isUserLoggedIn={userLoggedIn}/>
       
       <section>
         <div className="info">

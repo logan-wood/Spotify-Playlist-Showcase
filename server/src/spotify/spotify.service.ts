@@ -62,11 +62,14 @@ export class SpotifyService {
     }
 
     async getProfileByUser(user: User): Promise<SpotifyProfile> {
-        if (user.access_token_expires_on.getTime() < Date.now()) {
-            console.log('access_token is expired?')
-        }
-        else {
-            console.log('access_token is not expired')
+        if (user.access_token_expires_on.getTime() > Date.now()) {
+            console.log('access token expired')
+            // access token is expired, update access token
+            await this.getNewAccessToken(user)
+            .catch((error) => {
+                console.error('There was an error updating the user\'s access token: ' + error.message);
+                throw new InternalServerErrorException('There was an error updating the user\'s access token');
+            })
         }
         
         try {
@@ -106,9 +109,6 @@ export class SpotifyService {
                 console.error('There was an error updating the user\'s access token: ' + error.message);
                 throw new InternalServerErrorException('There was an error updating the user\'s access token');
             })
-        }
-        else {
-            console.log('access_token is not expired')
         }
 
         try {
