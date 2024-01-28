@@ -1,7 +1,4 @@
-$background-color: rgb(28, 29, 28);
-$background-secondary-color: rgb(54, 56, 54);
-$primary-color: #18d860;
-$default-font-color: white;
+@import 'variables';
 
 body {
   margin: 0;
@@ -18,28 +15,6 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
-}
-
-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 32px;
-  padding: 16px;
-  background-color: $background-secondary-color;
-
-  h4 {
-    margin: 0 32px;
-  }
-}
-
-nav button {
-  margin: auto 32px;
-  height: 32px;
-  padding: 8px 16px;
-  background-color: $primary-color;
-  color: $default-font-color;
-  border: none;
 }
 
 section {

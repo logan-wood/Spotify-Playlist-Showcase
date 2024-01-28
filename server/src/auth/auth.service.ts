@@ -120,8 +120,8 @@ export class AuthService {
                 }
             }
 
-            // redirect user
-            response.redirect(this.client_domain + '/dashboard')
+            // redirect user to frontend login callback
+            response.redirect(this.client_domain + '/login')
 
             return;
         } catch (error) {

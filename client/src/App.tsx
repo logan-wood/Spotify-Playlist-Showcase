@@ -1,11 +1,10 @@
+import Nav from './components/Navigation'
 import spotifyLogo from './images/spotify_logo.png'
 import './styles/index.scss'
 
 function App() {
   const spotifyLogin = async () => {
     try {
-      console.log('test')
-      console.log(process.env.REACT_APP_SERVER_DOMAIN)
       // get spotify login url
       const response = await fetch(process.env.REACT_APP_SERVER_DOMAIN + '/auth')
     
@@ -22,10 +21,7 @@ function App() {
 
   return (
     <div className="App">
-      <nav>
-        <h4>Showcaser</h4>
-        <button>About</button>
-      </nav>
+      <Nav />
       
       <section>
         <div className="info">

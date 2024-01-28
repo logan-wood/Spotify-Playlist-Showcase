@@ -1,42 +1,39 @@
 import { useEffect, useState } from "react"
-import { User } from "./types/user";
-import React from "react";
+import { User } from "./@types/user";
 import ErrorComponent from "./components/ErrorComponent";
+import './styles/dashboard.scss';
+import Nav from "./components/Navigation";
 
 function Dashboard() {
+    // state variables
     const [error, setError] = useState<string>('');
-    const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState<Boolean>(true)
+    const [user, setUser] = useState<User>();
 
     useEffect(() => {
-        console.log(user)
-
-        const getSpotifyProfile = async () => {
-            await fetch(process.env.REACT_APP_SERVER_DOMAIN + '/users/fromCookie')
-            .then(async response => await response.json())
-            .then((user) => {
-                setUser(user);
-                setIsLoading(false);
-            })
-            .catch((error) => {
-                setError('There was an error loading your profile. Please try again later.');
-                console.error('Error loading account data: ' + error);
-            });
+        try {
+            setUser(JSON.parse(localStorage.getItem('user') as string));
+        } catch {
+            setError('There was an error loading your profile.');
         }
+        console.log('Dashboard(): ' + user?.username);
 
-        getSpotifyProfile();
+        setIsLoading(false);
     }, [])
     
     return (
-        <div>
+        <>
             {/* Check if page is loading or if there is an error */}
             {isLoading && <h1>Loading...</h1>}
             {error && <ErrorComponent error={error} />}
             {!isLoading && (
                 // page content
-                <h1>Welcome back, {user?.username}</h1>
+                <div className="dashboard">
+                    <Nav />
+                    <h1>Welcome back, {user?.username}</h1>
+                </div>
             )}
-        </div>
+        </>
     )
         
     

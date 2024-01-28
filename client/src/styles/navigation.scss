@@ -1,0 +1,23 @@
+@import 'variables';
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    padding: 16px;
+    background-color: $background-secondary-color;
+  
+    h4 {
+      margin: 0 32px;
+    }
+
+    button {
+        margin: auto 32px;
+        height: 32px;
+        padding: 8px 16px;
+        background-color: $primary-color;
+        color: $default-font-color;
+        border: none;
+    }
+}
