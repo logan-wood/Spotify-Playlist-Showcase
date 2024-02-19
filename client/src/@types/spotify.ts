@@ -1,13 +1,3 @@
-export type SpotifyProfile = {
-    display_name: string,
-    id: string,
-    images: Array<{
-        url: string,
-        height: number | null,
-        width: number | null
-    }>
-}
-
 export type Playlist = {
     name: string,
     description: string,

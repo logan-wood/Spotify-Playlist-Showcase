@@ -33,11 +33,10 @@ export class AuthService {
 
     getLoginUrl(): URL {
         const state: string = randomUUID();
-        const scope: string = 'user-read-private user-read-email';
+        const scope: string = 'user-read-private user-read-email playlist-read-private';
          
         // construct url        
         var login_url: URL = new URL('https://accounts.spotify.com/authorize')
-        // client_id=${client_id}&response_type=code&redirect_uri=${redirect_uri}&state=${state}&scope=${scope}`
 
         login_url.searchParams.append('client_id', this.client_id);
         login_url.searchParams.append('response_type', 'code');

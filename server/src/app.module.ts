@@ -11,15 +11,17 @@ import { SpotifyController } from './spotify/spotify.controller';
 import { SpotifyService } from './spotify/spotify.service';
 
 @Module({
-  imports: [AuthModule, ConfigModule.forRoot(), TypeOrmModule.forRoot({
-    type: 'mysql',
-    host: 'localhost',
-    port: 3306,
-    username: 'root',
-    password: '',
-    database: 'Spotify_Playlist_Showcase_Dev',
-    autoLoadEntities: true,
-    synchronize: false
+  imports: [AuthModule, ConfigModule.forRoot(), TypeOrmModule.forRootAsync({
+    useFactory: () => ({
+      type: 'mysql',
+      host: process.env.DATABASE_HOST,
+      port: parseInt(process.env.DATABASE_PORT, 10),
+      username: process.env.DATABASE_USERNAME,
+      password: process.env.DATABASE_PASSWORD,
+      database: process.env.DATABASE_NAME,
+      autoLoadEntities: true,
+      synchronize: false,
+    })
   }), UsersModule],
   controllers: [AppController, UsersController, SpotifyController],
   providers: [AppService, UsersService, SpotifyService],
