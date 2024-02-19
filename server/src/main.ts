@@ -10,8 +10,7 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const cookieSecret = configService.get<string>('COOKIE_SECRET');
 
-  // middleware
-  app.enableCors();
+  app.enableCors({ origin: process.env.CLIENT_DOMAIN as string });
 
   app.use(cookieParser(cookieSecret, ));
 
