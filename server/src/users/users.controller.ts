@@ -17,4 +17,9 @@ export class UsersController {
         return await this.usersService.findOneBySpotifyCookie(request);
     }
 
+    @Get('accessToken')
+    async getAccessToken(@Req() request: Request): Promise<string> {
+        return (await this.usersService.findOneBySpotifyCookie(request)).access_token;
+    }
+
 }

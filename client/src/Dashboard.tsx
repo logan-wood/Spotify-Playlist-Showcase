@@ -5,6 +5,7 @@ import './styles/dashboard.scss';
 import Nav from "./components/Navigation";
 import { getLoggedInUser } from "./utils/userUtils";
 import { Playlist } from "./@types/spotify";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
     // state variables
@@ -12,6 +13,8 @@ function Dashboard() {
     const [isLoading, setIsLoading] = useState<Boolean>(true)
     const [user, setUser] = useState<User | null>(null);
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
+
+    const navigate = useNavigate()
 
     useEffect(() => {
         getLoggedInUser(setUser, setError);
@@ -21,7 +24,7 @@ function Dashboard() {
         setIsLoading(false);
     }, [])
 
-    const getPlaylists = async () => {
+    const getPlaylists = async (): Promise<void> => {
         const response = await fetch(process.env.REACT_APP_SERVER_DOMAIN + '/spotify/playlists')
         
         if (response.ok) {
@@ -31,7 +34,11 @@ function Dashboard() {
         } else {
             setError('There as an error retrieving your playlists');
         }
-    }   
+    }
+
+    const openPlaylist = (playlistId: string): void => {
+        navigate(`/playlist/${playlistId}`);
+    }
     
     return (
         <>
@@ -45,7 +52,7 @@ function Dashboard() {
                     <h1>Welcome back, {user?.username}</h1>
                     <section className='playlists'>
                         {playlists.map((playlist, index) => (
-                            <div key={index} className="playlist-preview">
+                            <div key={index} className="playlist-preview" onClick={() => { openPlaylist(playlist.id) }}>
                                 <h4>{playlist.name}</h4>
                                 <img src={playlist.images[0].url}></img>
                             </div>
