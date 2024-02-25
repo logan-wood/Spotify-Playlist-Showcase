@@ -62,7 +62,7 @@ export class SpotifyService {
     }
 
     async getProfileByUser(user: User): Promise<SpotifyProfile> {
-        if (user.access_token_expires_on.getTime() > Date.now()) {
+        if (user.access_token_expires_on.getTime() < Date.now()) {
             console.log('access token expired')
             // access token is expired, update access token
             await this.getNewAccessToken(user)
@@ -101,7 +101,7 @@ export class SpotifyService {
     }
     
     async getPlaylists(user: User): Promise<Playlist[]> {
-        if (user.access_token_expires_on.getTime() > Date.now()) {
+        if (user.access_token_expires_on.getTime() < Date.now()) {
             console.log('access token expired')
             // access token is expired, update access token
             await this.getNewAccessToken(user)
@@ -132,7 +132,7 @@ export class SpotifyService {
 
     // PUT to spotify
     async playTrack(user: User, device_id: string, track_id: string, position_ms: number): Promise<Object> {
-        if (user.access_token_expires_on.getTime() > Date.now()) {
+        if (user.access_token_expires_on.getTime() < Date.now()) {
             console.log('access token expired')
             // access token is expired, update access token
             await this.getNewAccessToken(user)

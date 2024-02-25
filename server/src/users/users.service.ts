@@ -76,6 +76,7 @@ export class UsersService {
 
     async udpateAccessToken(user: User, access_token: string): Promise<User> {
         user.access_token = access_token;
+        user.access_token_expires_on = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
         
         try {
             await this.usersRepository.save(user);
