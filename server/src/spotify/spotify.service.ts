@@ -131,7 +131,7 @@ export class SpotifyService {
     }
 
     // PUT to spotify
-    async playTrack(user: User, device_id: string, context_uri: string, position_ms: number): Promise<Object> {
+    async playTrack(user: User, device_id: string, track_id: string, position_ms: number): Promise<Object> {
         if (user.access_token_expires_on.getTime() > Date.now()) {
             console.log('access token expired')
             // access token is expired, update access token
@@ -144,7 +144,7 @@ export class SpotifyService {
 
         try {
             const data = {
-                context_uri: context_uri,
+                uris: ['spotify:track:' + track_id],
                 position_ms: position_ms
             };
 
@@ -155,9 +155,10 @@ export class SpotifyService {
                 body: JSON.stringify(data)
             });
 
+            const responseData = await response.json();
+            console.log(responseData);
+
             if (response.status == 204) {
-                const responseData = await response.json();
-                console.log(responseData);
 
                 return {
                     message: 'playback should have started'

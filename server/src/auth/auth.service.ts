@@ -33,7 +33,7 @@ export class AuthService {
 
     getLoginUrl(): URL {
         const state: string = randomUUID();
-        const scope: string = 'user-read-private user-read-email playlist-read-private streaming';
+        const scope: string = 'user-read-private user-read-email playlist-read-private streaming user-modify-playback-state';
          
         // construct url        
         var login_url: URL = new URL('https://accounts.spotify.com/authorize')

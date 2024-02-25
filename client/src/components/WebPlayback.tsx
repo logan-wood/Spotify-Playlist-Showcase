@@ -17,6 +17,7 @@ const WebPlayback = (props: { token: string }) => {
         document.body.appendChild(script);
 
         window.onSpotifyWebPlaybackSDKReady = () => {
+            console.log('onSpotifyPlaybackSDKReady()')
             const token = props.token;
             const player = new Spotify.Player({
                 name: 'Playlist Showcase Audio',
@@ -45,6 +46,8 @@ const WebPlayback = (props: { token: string }) => {
                 return;
             });
 
+            console.log(player)
+
             player.addListener('ready', ({ device_id }) => {
                 console.log('Ready with device ID ', device_id);
                 setDeviceId(device_id);
@@ -61,27 +64,25 @@ const WebPlayback = (props: { token: string }) => {
     /**
      * Controls playback on spotify, which should now be connected to this device.
      * 
-     * @param context_uri The song or playlist to be played. See Spotify Docs
+     * @param track_id 
      * @param position_ms 
      */
-    const playTrack = (context_uri: string, position_ms: number): void => {
+    const playTrack = async (track_id: string, position_ms: number) => {
         // check player and device id are valid
         if (player && deviceId != '') {
-            const data: PlaybackRequestBody = {
-                context_uri: context_uri,
-                position_ms: position_ms
-            };
+            const response = await fetch(process.env.REACT_APP_SERVER_DOMAIN + `/spotify/play?device_id=${deviceId}&track_id=${track_id}&position_ms=${position_ms}`);
 
-            fetch(process.env.REACT_APP_SERVER_DOMAIN + '/spotify/playback/play', {
-                method: 'POST',
-                body: JSON.stringify(data)
-            });
+            const responseData = await response.json();
+
+            console.log(responseData)
+        } else {
+            console.log('device_id and player dont exist')
         }
     }
 
     return (
         <>  
-            <button onClick={playTrack("spotify:traclk:4e7JOKEUBdrK17PWgBex8Q?si=95b828cd2db04cbd", 0)}>Play Track</button>
+            <button onClick={() => { playTrack("4e7JOKEUBdrK17PWgBex8Q?si=95b828cd2db04cbd", 0) }}>Play Track</button>
         </>
     )
 }
