@@ -155,20 +155,16 @@ export class SpotifyService {
                 body: JSON.stringify(data)
             });
 
-            const responseData = await response.json();
-            console.log(responseData);
-
-            if (response.status == 204) {
-
+            // if response is okay, send confirmation message
+            if (response.ok) {
                 return {
-                    message: 'playback should have started'
+                    message: `Playback started on device ${device_id}`
                 };
+            } else {
+                const error = await response.json();
+                console.error(error);
+                throw new InternalServerErrorException('There was an error starting playback');
             }
-
-            return {
-                responseCode: response.status,
-                message: 'Something went wrong...'
-            };
         } catch(error) {
             console.error(error);
             throw new InternalServerErrorException('There was an error starting playback');
