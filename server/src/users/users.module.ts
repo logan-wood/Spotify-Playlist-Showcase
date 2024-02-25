@@ -4,11 +4,11 @@ import { UsersService } from "./users.service";
 import { UsersController } from "./users.controller";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "./user.entity";
-import { UsersRepository } from "./users.repository";
+import { SpotifyService } from "src/spotify/spotify.service";
 
 @Module({
     controllers: [UsersController],
-    providers: [UsersService],
+    providers: [UsersService, SpotifyService],
     exports: [TypeOrmModule, UsersService],
     imports: [ConfigModule, TypeOrmModule.forFeature([User])]
 })
