@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from 'react';
 
-type PlaybackRequestBody = {
-    context_uri: string;
-    position_ms: number;
-};
-
 const WebPlayback = (props: { token: string }) => {
     const [player, setPlayer] = useState<Spotify.Player | null>(null);
     const [deviceId, setDeviceId] = useState<string>('');

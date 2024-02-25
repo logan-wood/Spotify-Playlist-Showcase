@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { Injectable, InternalServerErrorException, NotFoundException, Req } from "@nestjs/common";
 import { User } from "src/users/user.entity";
 import { Playlist, SpotifyProfile } from "./spotify.types";
 import { ConfigService } from "@nestjs/config";
@@ -127,6 +127,50 @@ export class SpotifyService {
         } catch(error) {
             console.log('There was an error fetching the user\'s playlists: ' + error.message);
             throw new InternalServerErrorException('There was an error fetching the user\'s playlists');
+        }
+    }
+
+    // PUT to spotify
+    async playTrack(user: User, device_id: string, context_uri: string, position_ms: number): Promise<Object> {
+        if (user.access_token_expires_on.getTime() > Date.now()) {
+            console.log('access token expired')
+            // access token is expired, update access token
+            await this.getNewAccessToken(user)
+            .catch((error) => {
+                console.error('There was an error updating the user\'s access token: ' + error.message);
+                throw new InternalServerErrorException('There was an error updating the user\'s access token');
+            })
+        }
+
+        try {
+            const data = {
+                context_uri: context_uri,
+                position_ms: position_ms
+            };
+
+            const response = await fetch('https://api.spotify.com/v1/me/player/play?device_id=' + device_id, {
+                method: 'PUT',
+                headers: { Authorization: `Bearer ${user.access_token}`},
+                credentials: 'include',
+                body: JSON.stringify(data)
+            });
+
+            if (response.status == 204) {
+                const responseData = await response.json();
+                console.log(responseData);
+
+                return {
+                    message: 'playback should have started'
+                };
+            }
+
+            return {
+                responseCode: response.status,
+                message: 'Something went wrong...'
+            };
+        } catch(error) {
+            console.error(error);
+            throw new InternalServerErrorException('There was an error starting playback');
         }
     }
 }
