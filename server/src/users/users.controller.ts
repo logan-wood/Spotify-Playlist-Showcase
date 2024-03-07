@@ -29,14 +29,8 @@ export class UsersController {
     async getAccessToken(@Req() request: Request): Promise<string> {
         const user = await this.usersService.findOneBySpotifyCookie(request)
 
-        if (user.access_token_expires_on.getTime() > Date.now()) {
-            console.log('access token expired')
-            // access token is expired, update access token
-            await this.spotifyService.getNewAccessToken(user)
-            .catch((error) => {
-                console.error('There was an error updating the user\'s access token: ' + error.message);
-                throw new InternalServerErrorException('There was an error updating the user\'s access token');
-            })
+        if (user) {
+            await this.spotifyService.checkAccessTokenExpired(user)
         }
 
         return user.access_token;

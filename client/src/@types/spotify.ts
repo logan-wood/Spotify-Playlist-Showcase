@@ -12,6 +12,15 @@ export type Playlist = {
     }>,
     tracks: {
         href: string,
-        total: number
+        total: number,
+        items: Array<{
+            track: Track
+        }>
     }
+}
+
+export type Track = {
+    name: string,
+    id: string,
+    duration_ms: number
 }

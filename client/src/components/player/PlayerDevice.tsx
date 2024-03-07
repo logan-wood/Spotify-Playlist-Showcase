@@ -1,12 +1,11 @@
-import { useEffect } from "react";
+import React, { useEffect, forwardRef } from "react";
 import { usePlayerDevice } from "react-spotify-web-playback-sdk";
 
-interface props {
-    track_id: string,
-    position_ms: number
+interface DeviceRef {
+    playTrack: (track_id: string, position_ms: number) => void;
 }
 
-const PlayerDevice: React.FC<props> = ({ track_id, position_ms }) => {
+const PlayerDevice = React.forwardRef<DeviceRef>((ref) => {
     const device = usePlayerDevice();
 
     useEffect(() => {
@@ -15,7 +14,7 @@ const PlayerDevice: React.FC<props> = ({ track_id, position_ms }) => {
 
     // need to figure out how playing songs will work
     
-    const playSong = async () => {
+    const playTrack = async (track_id: string, position_ms: number) => {
         if (device == null) return;
 
         const response = await fetch(process.env.REACT_APP_SERVER_DOMAIN + `/spotify/play?device_id=${device.device_id}&track_id=${track_id}&position_ms=${position_ms}`);
@@ -26,8 +25,9 @@ const PlayerDevice: React.FC<props> = ({ track_id, position_ms }) => {
     }
 
     return (
-        <></>
+        <>
+        </>
     )
-}
+});
 
 export default PlayerDevice;

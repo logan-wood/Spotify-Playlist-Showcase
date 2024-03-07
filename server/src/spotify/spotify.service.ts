@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException, NotFoundException, Req } from "@nestjs/common";
 import { User } from "src/users/user.entity";
-import { Playlist, SpotifyProfile } from "./spotify.types";
+import { Playlist, SpotifyProfile, Track } from "./spotify.types";
 import { ConfigService } from "@nestjs/config";
 import { UsersService } from "src/users/users.service";
 
@@ -17,6 +17,20 @@ export class SpotifyService {
         } catch(error) {
             console.error('Unable to find environment variables: ' + error.message);
             throw new NotFoundException('environment variables not found');        
+        }
+    }
+
+    checkAccessTokenExpired = async (user: User) => {
+        const currentTime = new Date();
+
+        if (user.access_token_expires_on.valueOf() < currentTime.valueOf()) {
+            console.log('checkAccessToken(): access token is expired - getting new token');
+            await this.getNewAccessToken(user)
+
+            .catch((error) => {
+                console.error('There was an error updating the user\'s access token: ' + error.message);
+                throw new InternalServerErrorException('There was an error updating the user\'s access token');
+            })
         }
     }
 
@@ -62,15 +76,7 @@ export class SpotifyService {
     }
 
     async getProfileByUser(user: User): Promise<SpotifyProfile> {
-        if (user.access_token_expires_on.getTime() < Date.now()) {
-            console.log('access token expired')
-            // access token is expired, update access token
-            await this.getNewAccessToken(user)
-            .catch((error) => {
-                console.error('There was an error updating the user\'s access token: ' + error.message);
-                throw new InternalServerErrorException('There was an error updating the user\'s access token');
-            })
-        }
+        this.checkAccessTokenExpired(user)
         
         try {
             // get spotify user profile
@@ -101,15 +107,7 @@ export class SpotifyService {
     }
     
     async getPlaylists(user: User): Promise<Playlist[]> {
-        if (user.access_token_expires_on.getTime() < Date.now()) {
-            console.log('access token expired')
-            // access token is expired, update access token
-            await this.getNewAccessToken(user)
-            .catch((error) => {
-                console.error('There was an error updating the user\'s access token: ' + error.message);
-                throw new InternalServerErrorException('There was an error updating the user\'s access token');
-            })
-        }
+        this.checkAccessTokenExpired(user)
 
         try {
             const response = await fetch('https://api.spotify.com/v1/me/playlists', {
@@ -130,17 +128,42 @@ export class SpotifyService {
         }
     }
 
+    async getPlaylist(user: User, playlist_id: string): Promise<Playlist> {
+        this.checkAccessTokenExpired(user)
+
+        try {
+            const response = await fetch('https://api.spotify.com/v1/playlists/' + playlist_id, {
+                headers: { Authorization: `Bearer ${user.access_token}`},
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                return data;
+            }
+        } catch(error) {
+            console.log('There was an error fetching the playlist: ' + error.message);
+            throw new InternalServerErrorException('There was an error fetching the playlist');
+        }
+    }
+
+    async getTrack(track_id: string): Promise<Track> {
+        try {
+            const response = await fetch(`https://api.spotify.com/v1/tracks/${track_id}`)
+
+            if (response.ok) {
+                const data = await response.json();
+                return data;
+            }
+        } catch(error) {
+            console.log('There was an error fetching the playlist: ' + error.message);
+            throw new InternalServerErrorException('There was an error getting the track');
+        }
+    }
+
     // PUT to spotify
     async playTrack(user: User, device_id: string, track_id: string, position_ms: number): Promise<Object> {
-        if (user.access_token_expires_on.getTime() < Date.now()) {
-            console.log('access token expired')
-            // access token is expired, update access token
-            await this.getNewAccessToken(user)
-            .catch((error) => {
-                console.error('There was an error updating the user\'s access token: ' + error.message);
-                throw new InternalServerErrorException('There was an error updating the user\'s access token');
-            })
-        }
+        this.checkAccessTokenExpired(user)
 
         try {
             const data = {
