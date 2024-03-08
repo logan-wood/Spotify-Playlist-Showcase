@@ -2,6 +2,7 @@ import React, { useState, useEffect, forwardRef, useCallback, useRef, Ref, useIm
 import { WebPlaybackSDK, usePlayerDevice, useWebPlaybackSDKReady } from 'react-spotify-web-playback-sdk';
 import PlayerState from './PlayerState';
 import PlayerDevice from './PlayerDevice';
+import PlayerErrors from './PlayerErrors';
 
 interface PlayerRef {
     playTrack: (track_id: string, position_ms: number) => void;
@@ -10,8 +11,6 @@ interface PlayerRef {
 interface DeviceRef {
     playTrack: (track_id: string, position_ms: number) => void;
 }
-
-// This component is intended to be used for a whole showcase. Please alter to an array of objects with track_id, position_ms, and duration which will be played out to the user.
 
 const WebPlayback = forwardRef((props: { token: string }, ref: Ref<PlayerRef>) => {
     const deviceRef = useRef<DeviceRef>(null);
@@ -36,6 +35,7 @@ const WebPlayback = forwardRef((props: { token: string }, ref: Ref<PlayerRef>) =
             <div>
                 <PlayerState />
                 <PlayerDevice ref={deviceRef} />
+                <PlayerErrors />
             </div>
         </WebPlaybackSDK>
     );

@@ -24,10 +24,6 @@ function Playlist() {
         getPlaylistData();
     }, [])
 
-    useEffect(() => {
-        console.log(playerRef)
-    }, [playerRef])
-
     const getPlaylistData = async (): Promise<void> => {
         try {
             const response = await fetch(process.env.REACT_APP_SERVER_DOMAIN + '/spotify/playlist?playlist_id=' + playlist_id);
