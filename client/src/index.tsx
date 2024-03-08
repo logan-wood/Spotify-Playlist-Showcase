@@ -8,6 +8,7 @@ import Dashboard from './Dashboard';
 import PrivateRoutes from './utils/PrivateRoutes';
 import Login from './Login';
 import Playlist from './Playlist';
+import About from './About';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -21,6 +22,7 @@ root.render(
             <Route element={<Dashboard />} path="/dashboard" />
             <Route element={<Playlist />} path='/playlist/:playlist_id' />
           </Route>
+          <Route element={<About />} path='/about' />
           <Route element={<Login />} path='/login' />
           <Route element={<App />} path="/" />
         </Routes>
