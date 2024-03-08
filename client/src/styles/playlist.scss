@@ -1,0 +1,36 @@
+@import 'variables';
+
+.playlist {
+    .playlist-label {
+        max-width: 90vw;
+        margin: 0 auto;
+
+        img {
+            display: block;
+            width: 60vw;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        h4 {
+            text-align: center;
+        }
+    }
+    
+    .playlist-tracks {
+        width: 60vw;
+        max-width: 320px;
+        margin: 32px auto;
+
+        .track {
+            p {
+                margin: 4px 0;
+            }
+        }
+    
+        .track:hover {
+            cursor: pointer;
+        }
+    }
+}
+

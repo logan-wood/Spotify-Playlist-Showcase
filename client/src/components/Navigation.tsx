@@ -14,7 +14,7 @@ const Nav = (props: {isUserLoggedIn: boolean}) => {
         <nav>
             <h4>Showcaser</h4>
             <div>
-                <button>About</button>
+                <button onClick={() => navigate('/about')}>About</button>
                 {props.isUserLoggedIn && <button onClick={Logout}>Log Out</button>}
             </div>
         </nav>
