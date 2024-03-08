@@ -58,17 +58,24 @@ function Playlist() {
         <>
             <Nav isUserLoggedIn={true} />
             {playlist && (
-                <div>{playlist.name}</div>
+                <div className='playlist'>
+                    <div className='playlist-label'>
+                        <h4>{playlist.name}</h4>
+                        <img src={playlist.images[0].url} alt='Playlist Image' />
+                    </div>
+                    <div className='playlist-tracks'>
+                    {playlist?.tracks.items.map((track, index) => {
+                        return (
+                        <div key={index} className='track'>
+                            <p onClick={() => { playTrack(track.track.id, 0) }}>▶ {track.track.name}</p>
+                        </div>
+                        )
+                    })}
+                    </div>
+                </div>
             )}
 
-            {playlist?.tracks.items.map((track, index) => {
-
-                return (
-                <div key={index} className='track'>
-                    <p onClick={() => { playTrack(track.track.id, 0) }}>{track.track.name}</p>
-                </div>
-                )
-            })}
+            
 
             {token && ( <WebPlayback ref={playerRef} token={token} /> )}
         </>

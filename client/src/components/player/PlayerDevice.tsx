@@ -1,4 +1,4 @@
-import React, { useEffect, forwardRef, useImperativeHandle, Ref, useRef } from "react";
+import React, { forwardRef, useImperativeHandle, Ref } from "react";
 import { usePlayerDevice } from "react-spotify-web-playback-sdk";
 
 interface DeviceRef {

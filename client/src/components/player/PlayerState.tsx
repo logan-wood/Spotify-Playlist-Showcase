@@ -5,9 +5,7 @@ const PlayerState = () => {
     
     if (!playerReady) return <div>Loading...</div>
     
-    return (
-        <div>Player is ready!</div>
-    );
+    return null;
 }
 
 export default PlayerState;
