@@ -1,11 +1,7 @@
-import React, { useState, useEffect, forwardRef, useCallback, useRef } from 'react';
+import React, { useState, useEffect, forwardRef, useCallback, useRef, Ref, useImperativeHandle } from 'react';
 import { WebPlaybackSDK, usePlayerDevice, useWebPlaybackSDKReady } from 'react-spotify-web-playback-sdk';
 import PlayerState from './PlayerState';
 import PlayerDevice from './PlayerDevice';
-
-interface WebPlaybackProps {
-    token: string;
-}
 
 interface PlayerRef {
     playTrack: (track_id: string, position_ms: number) => void;
@@ -17,11 +13,12 @@ interface DeviceRef {
 
 // This component is intended to be used for a whole showcase. Please alter to an array of objects with track_id, position_ms, and duration which will be played out to the user.
 
-const WebPlayback = forwardRef<PlayerRef, WebPlaybackProps>((props, ref) => {
+const WebPlayback = forwardRef((props: { token: string }, ref: Ref<PlayerRef>) => {
     const deviceRef = useRef<DeviceRef>(null);
 
+    useImperativeHandle(ref, () => ({ playTrack: (track_id: string, position_ms: number) => playTrack(track_id, position_ms)}), [])
     const playTrack = (track_id: string, position_ms: number) => {
-        console.log('playTrack() called from <Player>')
+        deviceRef.current?.playTrack(track_id, position_ms);
     }
 
     const getOAuthToken: Spotify.PlayerInit["getOAuthToken"] = useCallback(

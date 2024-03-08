@@ -37,7 +37,7 @@ function Dashboard() {
     }
 
     const openPlaylist = (playlistId: string): void => {
-        navigate(`/playlist?playlist_id=${playlistId}`);
+        navigate(`/playlist/${playlistId}`);
     }
     
     return (

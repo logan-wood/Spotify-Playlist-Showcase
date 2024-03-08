@@ -19,7 +19,7 @@ root.render(
         <Routes>
           <Route element={<PrivateRoutes />}>
             <Route element={<Dashboard />} path="/dashboard" />
-            <Route element={<Playlist />} path='playlist/:playlistId' />
+            <Route element={<Playlist />} path='/playlist/:playlist_id' />
           </Route>
           <Route element={<Login />} path='/login' />
           <Route element={<App />} path="/" />
