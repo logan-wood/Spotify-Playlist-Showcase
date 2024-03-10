@@ -9,6 +9,8 @@ import { UsersService } from './users/users.service';
 import { UsersModule } from './users/users.module';
 import { SpotifyController } from './spotify/spotify.controller';
 import { SpotifyService } from './spotify/spotify.service';
+import { PresentationModule } from './presentation/presentation.module';
+import { TrackModule } from './track/track.module';
 
 @Module({
   imports: [AuthModule, ConfigModule.forRoot(), TypeOrmModule.forRootAsync({
@@ -22,7 +24,7 @@ import { SpotifyService } from './spotify/spotify.service';
       autoLoadEntities: true,
       synchronize: false,
     })
-  }), UsersModule],
+  }), UsersModule, PresentationModule, TrackModule],
   controllers: [AppController, UsersController, SpotifyController],
   providers: [AppService, UsersService, SpotifyService],
 })
