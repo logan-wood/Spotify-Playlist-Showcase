@@ -27,4 +27,7 @@ export class User {
 
     @OneToMany(() => Presentation, (presentation) => presentation.user)
     presentations: any;
+
+    @Column()
+    name: string;
 }

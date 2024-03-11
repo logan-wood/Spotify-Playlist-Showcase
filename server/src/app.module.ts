@@ -11,7 +11,7 @@ import { SpotifyController } from './spotify/spotify.controller';
 import { SpotifyService } from './spotify/spotify.service';
 import { PresentationsModule } from './presentation/presentations.module';
 import { TracksModule } from './track/tracks.module';
-import { dataSourceConfig } from './config/database.config';
+import { dataSourceConfig } from './database.config';
 
 @Module({
   imports: [AuthModule, ConfigModule.forRoot(), TypeOrmModule.forRootAsync({

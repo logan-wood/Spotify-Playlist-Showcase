@@ -1,7 +1,7 @@
 import { DataSource, DataSourceOptions } from "typeorm";
-import { Presentation } from "../presentation/entities/presentation.entity";
-import { Track } from "../track/entities/track.entity";
-import { User } from "../users/user.entity";
+// import { Presentation } from "../presentation/entities/presentation.entity";
+// import { Track } from "../track/entities/track.entity";
+// import { User } from "../users/user.entity";
 
 import { config } from "dotenv";
 config();
@@ -13,7 +13,8 @@ export const dataSourceConfig: DataSourceOptions = {
     username: process.env.DATABASE_USERNAME,
     password: process.env.DATABASE_PASSWORD,
     database: process.env.DATABASE_NAME,
-    entities: [User, Track, Presentation],
+    entities: ['dist/src/**/*.entity{.js,.ts}'],
+    migrations: ['dist/migrations/**/*{.js,.ts}'],
     synchronize: false,
 }
 

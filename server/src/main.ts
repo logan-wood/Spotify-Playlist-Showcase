@@ -5,7 +5,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
-import { dataSourceConfig } from './config/database.config';
+import { dataSourceConfig } from './database.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,7 +18,7 @@ async function bootstrap() {
   app.enableCors();
 
   app.use(cookieParser(cookieSecret));
-  
+
   const port = process.env.PORT
   await app.listen(port);
 }
