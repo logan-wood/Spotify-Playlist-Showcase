@@ -46,8 +46,6 @@ export class UsersService {
         try {
             const createdUser = await this.usersRepository.save(user);
 
-            console.log('Successfully created user: ', createdUser);
-
             return createdUser
         } catch(error) {
             console.error('Unable to add new user to database: ' + error.message);

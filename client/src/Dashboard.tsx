@@ -26,11 +26,15 @@ function Dashboard() {
 
     const getPlaylists = async (): Promise<void> => {
         const response = await fetch(process.env.REACT_APP_SERVER_DOMAIN + '/spotify/playlists')
-        
         if (response.ok) {
-            const playlists = await response.json();
+            try {
+                const playlists = await response.json();
 
-            setPlaylists(playlists)
+                setPlaylists(playlists);
+            } catch(error) {
+                console.error(error);
+                return;
+            }
         } else {
             setError('There as an error retrieving your playlists');
         }

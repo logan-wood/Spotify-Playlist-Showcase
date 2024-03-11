@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "src/users/user.entity";
 
 @Entity()
 export class Presentation {
@@ -6,12 +7,12 @@ export class Presentation {
     id: number;
 
     // change to foreign key
-    @Column()
+    @ManyToOne(() => User, (user) => user.id)
     user_id: number;
     
     @Column()
     playlist_id: string;
     
     @Column()
-    track_queue: Array<String>;
+    track_queue: Array<Number>;
 }

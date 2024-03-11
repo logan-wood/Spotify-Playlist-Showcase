@@ -31,7 +31,7 @@ export class SpotifyController {
     @Get('playlists')
     async getPlaylists(@Req() request: Request): Promise<Playlist[]> {
         const currentUser: User = await this.usersService.findOneBySpotifyCookie(request);
-
+        console.log(currentUser)
         return await this.spotifyService.getPlaylists(currentUser);
     }
 

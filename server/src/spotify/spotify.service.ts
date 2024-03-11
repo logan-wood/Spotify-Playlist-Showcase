@@ -139,6 +139,7 @@ export class SpotifyService {
 
             if (response.ok) {
                 const data = await response.json();
+
                 return data;
             }
         } catch(error) {
