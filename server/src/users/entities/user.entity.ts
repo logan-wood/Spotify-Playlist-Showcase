@@ -1,5 +1,6 @@
-import { Presentation } from 'src/presentation/entities/presentation.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Presentation } from '../../presentation/entities/presentation.entity';
+
 
 @Entity()
 export class User {
@@ -27,7 +28,4 @@ export class User {
 
     @OneToMany(type => Presentation, presentation => presentation.user)
     presentations: Presentation[] ;
-
-    @Column()
-    name: string;
 }

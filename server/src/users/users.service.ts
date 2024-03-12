@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, TableCheck } from "typeorm";
-import { User } from "./user.entity";
+import { User } from "./entities/user.entity";
 import { Request } from "express";
 
 @Injectable()

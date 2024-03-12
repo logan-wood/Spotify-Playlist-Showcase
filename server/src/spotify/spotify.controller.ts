@@ -1,7 +1,7 @@
 import { Controller, Get, Put, Query, Req } from '@nestjs/common';
 import { SpotifyService } from './spotify.service';
 import { Playlist, SpotifyProfile, Track } from './spotify.types';
-import { User } from 'src/users/user.entity';
+import { User } from 'src/users/entities/user.entity';
 import { Request } from 'express';
 import { UsersService } from 'src/users/users.service';
 

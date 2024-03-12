@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException, NotFoundException, Req } from "@nestjs/common";
-import { User } from "src/users/user.entity";
+import { User } from "src/users/entities/user.entity";
 import { Playlist, SpotifyProfile, Track } from "./spotify.types";
 import { ConfigService } from "@nestjs/config";
 import { UsersService } from "src/users/users.service";

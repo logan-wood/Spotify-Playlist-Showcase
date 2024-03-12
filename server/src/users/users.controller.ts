@@ -1,5 +1,5 @@
 import { Controller, Get, InternalServerErrorException, Req } from '@nestjs/common';
-import { User } from './user.entity';
+import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { Request } from 'express';
 import { SpotifyService } from 'src/spotify/spotify.service';
