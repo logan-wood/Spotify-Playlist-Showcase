@@ -25,8 +25,8 @@ export class User {
     @Column()
     refresh_token: string;
 
-    @OneToMany(() => Presentation, (presentation) => presentation.user)
-    presentations: any;
+    @OneToMany(type => Presentation, presentation => presentation.user)
+    presentations: Presentation[] ;
 
     @Column()
     name: string;

@@ -7,7 +7,7 @@ export class Presentation {
     id: number;
 
     // change to foreign key
-    @ManyToOne(() => User, (user) => user.presentations)
+    @ManyToOne(type => User, (user) => user.presentations)
     user: User;
 
     @Column()
