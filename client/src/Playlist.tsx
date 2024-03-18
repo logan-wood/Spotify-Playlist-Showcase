@@ -4,6 +4,7 @@ import WebPlayback from './components/player/Player';
 import { Playlist as PlaylistType, Track } from './@types/spotify';
 import Nav from './components/Navigation';
 import './styles/playlist.scss';
+import EditPresentation from './components/EditPresentation';
 
 interface PlayerRef {
     playTrack: (track_id: string, position_ms: number) => void
@@ -12,6 +13,7 @@ interface PlayerRef {
 function Playlist() {
     const [token, setToken] = useState<string>('');
     const [playlist, setPlaylist] = useState<PlaylistType | null>(null)
+    const [editPresentation, setEditPresentation] = useState<boolean>(false);
 
     const { playlist_id } = useParams();
 
@@ -72,6 +74,8 @@ function Playlist() {
                         )
                     })}
                     </div>
+                    {playlist && <button onClick={() => {setEditPresentation(true)}}>Edit Presentation</button>}
+                    {(editPresentation && playlist) && <EditPresentation playlist={playlist} />}
                 </div>
             )}
 

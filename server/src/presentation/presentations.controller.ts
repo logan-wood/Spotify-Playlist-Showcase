@@ -1,15 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
 import { PresentationsService } from './presentations.service';
 import { CreatePresentationDto } from './dto/create-presentation.dto';
 import { UpdatePresentationDto } from './dto/update-presentation.dto';
+import { User } from 'src/users/entities/user.entity';
+import { UsersService } from 'src/users/users.service';
+import { Request } from 'express';
 
 @Controller('presentations')
 export class PresentationsController {
-  constructor(private readonly presentationsService: PresentationsService) {}
+  constructor(private readonly presentationsService: PresentationsService,
+    private readonly usersService: UsersService) {}
 
   @Post()
   async create(@Body() createPresentationDto: CreatePresentationDto) {
-    console.log(createPresentationDto)
     return this.presentationsService.create(createPresentationDto);
   }
 
@@ -18,9 +21,11 @@ export class PresentationsController {
     return this.presentationsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.presentationsService.findOne(+id);
+  @Get(':playlist_id')
+  async findOne(@Req() request: Request, @Param('playlist_id') playlist_id: string) {
+    const currentUser: User = await this.usersService.findOneBySpotifyCookie(request);
+
+    return this.presentationsService.findOne(playlist_id, currentUser);
   }
 
   @Patch(':id')

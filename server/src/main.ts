@@ -19,7 +19,7 @@ async function bootstrap() {
 
   app.use(cookieParser(cookieSecret));
 
-  const port = process.env.PORT
+  const port = configService.get<number>('PORT')
   await app.listen(port);
 }
 bootstrap();

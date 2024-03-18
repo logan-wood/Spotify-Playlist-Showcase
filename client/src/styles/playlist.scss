@@ -34,3 +34,20 @@
     }
 }
 
+.edit-presentation {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: $background-secondary-color;
+    padding: 32px 32px;
+
+    p {
+        margin: 0;
+        padding: 8px 16px;
+    }
+    
+    .track:hover {
+        cursor: pointer;
+    }
+}

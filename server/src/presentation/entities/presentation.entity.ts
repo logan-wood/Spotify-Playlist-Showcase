@@ -8,11 +8,12 @@ export class Presentation {
 
     // change to foreign key
     @ManyToOne(type => User, (user) => user.presentations)
+    @JoinColumn()
     user: User;
 
     @Column()
     playlist_id: string;
     
-    @Column()
+    @Column({ default: '[]' })
     track_queue: string;
 }
