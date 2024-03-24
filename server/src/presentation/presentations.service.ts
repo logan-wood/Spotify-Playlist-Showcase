@@ -6,19 +6,43 @@ import { Presentation } from './entities/presentation.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { SpotifyService } from 'src/spotify/spotify.service';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class PresentationsService {
   constructor(
     @InjectRepository(Presentation)
     private readonly presentationsRepository: Repository<Presentation>,
+    private readonly usersService: UsersService,
     private readonly spotifyService: SpotifyService
   ) {}
 
   async create(createPresentationDto: CreatePresentationDto) {
-    // create track queue
-    // check all tracks have a record in database
-    return await this.presentationsRepository.save(createPresentationDto);
+    const { user_id, playlist_id } = createPresentationDto;
+    console.log(createPresentationDto)
+
+    if (!user_id || !playlist_id) {
+      throw new Error('parameters not recieved when creating new presentation');
+    }
+
+    const user = await this.usersService.findOne(user_id);
+    console.log(user)
+
+    if (!user) {
+      throw new Error('User not found while creating presentation');
+    }
+
+    const presentation = new Presentation();
+    presentation.user = user;
+    presentation.playlist_id = playlist_id;
+
+    const newPresentation = await this.presentationsRepository.save(presentation);
+
+    if (!newPresentation) {
+      throw new InternalServerErrorException('There was an error saving the presentation');
+    }
+
+    return newPresentation; 
   }
 
   async findAll() {
