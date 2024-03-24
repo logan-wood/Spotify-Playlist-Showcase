@@ -77,7 +77,13 @@ export class PresentationsService {
   } 
 
   update(id: number, updatePresentationDto: UpdatePresentationDto) {
-    return `This action updates a #${id} presentation`;
+    const track_queue: string = updatePresentationDto.track_queue.toString();
+
+    const updatedPresentation = this.presentationsRepository.update(id, { track_queue: track_queue });
+
+    if (!updatedPresentation) throw new InternalServerErrorException('There was an error updating the presentation in the database.');
+  
+    return updatedPresentation;
   }
 
   remove(id: number) {
