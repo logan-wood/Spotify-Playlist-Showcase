@@ -19,14 +19,12 @@ export class PresentationsService {
 
   async create(createPresentationDto: CreatePresentationDto) {
     const { user_id, playlist_id } = createPresentationDto;
-    console.log(createPresentationDto)
 
     if (!user_id || !playlist_id) {
       throw new Error('parameters not recieved when creating new presentation');
     }
 
     const user = await this.usersService.findOne(user_id);
-    console.log(user)
 
     if (!user) {
       throw new Error('User not found while creating presentation');
@@ -57,22 +55,20 @@ export class PresentationsService {
       }
     });
 
-    console.log(user)
-
     if (presentation) {
       // record found
       return presentation;
     } else {
       // no record found, create new presentation
-      // try {
-      //   console.log(`No presentation found for playlist ${playlist_id}, creating new presentation`);
-      //   const newPresentation = await this.create({ user_id: user.id, playlist_id: playlist_id });
+      try {
+        console.log(`No presentation found for playlist ${playlist_id}, creating new presentation`);
+        const newPresentation = await this.create({ user_id: user.id, playlist_id: playlist_id });
 
-      //   return newPresentation;
-      // } catch(error) {
-      //   console.error('An error occured auto generating a presentation: ' + error)
-      //   throw new InternalServerErrorException('Presentation not found - an error occured generating new presentation');
-      // }
+        return newPresentation;
+      } catch(error) {
+        console.error('An error occured auto generating a presentation: ' + error)
+        throw new InternalServerErrorException('Presentation not found - an error occured generating new presentation');
+      }
     } 
   } 
 
