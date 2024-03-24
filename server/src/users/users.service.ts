@@ -17,7 +17,7 @@ export class UsersService {
     findOne(id: number): Promise<User> {
         return this.usersRepository.findOneBy({ id });
     }
-    
+
     /**
      * This function gets the currently logged in user
      * 

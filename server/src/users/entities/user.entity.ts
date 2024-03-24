@@ -14,7 +14,7 @@ export class User {
     username: string;
 
     // set to random for security
-    @Column()
+    @Column({ nullable: true, default: null })
     spotify_cookie: string;
 
     @Column()

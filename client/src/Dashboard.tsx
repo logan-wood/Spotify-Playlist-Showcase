@@ -25,7 +25,7 @@ function Dashboard() {
     }, [])
 
     const getPlaylists = async (): Promise<void> => {
-        const response = await fetch(process.env.REACT_APP_SERVER_DOMAIN + '/spotify/playlists')
+        const response = await fetch(process.env.REACT_APP_SERVER_DOMAIN + '/spotify/playlists', { credentials: 'include' })
         if (response.ok) {
             try {
                 const playlists = await response.json();

@@ -8,7 +8,7 @@ function Login() {
     useEffect(() => {
         const getCurrentUser = async () => {
             // user is redirected here after server authentication flow. Get user from server, and set neccesary session information
-            await fetch(process.env.REACT_APP_SERVER_DOMAIN + '/users/fromCookie')
+            await fetch(process.env.REACT_APP_SERVER_DOMAIN + '/users/fromCookie', { credentials: 'include' })
             .then(async response => await response.json())
             .then((response) => {
                 const currentUser: User = {
@@ -16,7 +16,6 @@ function Login() {
                 } 
 
                 localStorage.setItem('user', JSON.stringify(currentUser));
-                console.log(localStorage.getItem('user'));
 
                 // redirect to dashboard
                 navigate('/dashboard');

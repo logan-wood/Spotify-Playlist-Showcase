@@ -28,7 +28,7 @@ function Playlist() {
 
     const getPlaylistData = async (): Promise<void> => {
         try {
-            const response = await fetch(process.env.REACT_APP_SERVER_DOMAIN + '/spotify/playlist?playlist_id=' + playlist_id);
+            const response = await fetch(process.env.REACT_APP_SERVER_DOMAIN + '/spotify/playlist?playlist_id=' + playlist_id, { credentials: 'include' });
             if (response.ok) {
                 const data = await response.json();
 
@@ -41,7 +41,7 @@ function Playlist() {
 
     const getAccessToken = async () => {
         try {
-            const response = await fetch(process.env.REACT_APP_SERVER_DOMAIN + '/users/accessToken');
+            const response = await fetch(process.env.REACT_APP_SERVER_DOMAIN + '/users/accessToken', { credentials: 'include' });
             const accessToken: string = await response.text();
             
             setToken(accessToken);

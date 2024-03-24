@@ -6,7 +6,7 @@ const Nav = (props: {isUserLoggedIn: boolean}) => {
     const navigate = useNavigate();
 
     const Logout = () => {
-        localStorage.setItem('user', '');
+        localStorage.removeItem('user');
         navigate('/');
     }
 
@@ -15,7 +15,13 @@ const Nav = (props: {isUserLoggedIn: boolean}) => {
             <h4>Showcaser</h4>
             <div>
                 <button onClick={() => navigate('/about')}>About</button>
-                {props.isUserLoggedIn && <button onClick={Logout}>Log Out</button>}
+                {props.isUserLoggedIn && (
+                <>
+                    <button onClick={Logout}>Log Out</button>
+                    <button onClick={() => { navigate('/dashboard') }}>Dashboard</button>
+                </>
+                
+                )}
             </div>
         </nav>
     );

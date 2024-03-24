@@ -1,28 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
 import { User } from '../@types/user';
-import { getLoggedInUser } from './userUtils';
+import { getLoggedInUser, isUserLoggedIn } from './userUtils';
 
 const PrivateRoutes = () => {
-    const [error, setError] = useState<string>('');
-    const [user, setUser] = useState<User | null>(null);
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    // set user object if not null
     useEffect(() => {
-        getLoggedInUser(setUser, setError)
+        setIsLoggedIn(isUserLoggedIn());
+    }, []);
+
+    // will run once isLoading is updated
+    useEffect(() => {
         setIsLoading(false);
-    }, [])
+    }, [isLoggedIn])
 
-    if (isLoading) {
-        return <div>Loading...</div>
+    while (isLoading) {
+        return <p>Loading...</p>
     }
 
-    if (error) {
-        return <div>{error}</div>
-    }
-
-    return ( user ? <Outlet /> : <Navigate to="/" />)
+    return ( isLoggedIn ? <Outlet /> : <Navigate to='/' />)
 }
 
 export default PrivateRoutes;
