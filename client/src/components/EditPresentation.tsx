@@ -13,13 +13,23 @@ const EditPresentation = (props: Props) => {
         getPresentation()
     }, [])
 
+    useEffect(() => {
+        console.log(presentation)
+    }, [presentation])
+
     const getPresentation = async () => {
         try {
-            const response = await fetch(process.env.REACT_APP_SERVER_DOMAIN + '/presentation?playlist_id=' + props.playlist.id);
+            const response = await fetch(process.env.REACT_APP_SERVER_DOMAIN + `/presentations/${props.playlist.id}`, { credentials: 'include' });
 
             if (response.ok) {
                 const data = await response.json();
-                console.log(data)
+                const track_queue = JSON.parse(data.track_queue);
+
+                setPresentation({
+                    id: data.id,
+                    playlist_id: data.playlist_id,
+                    track_queue: track_queue
+                });
             }
 
         } catch(error) {
@@ -30,14 +40,7 @@ const EditPresentation = (props: Props) => {
     return (
         <div>
             <div className="edit-presentation">
-                {props.playlist.tracks.items.map((track, index) => {
-                    console.log(track.track.name)
-                    return (
-                    <div key={index} className="track">
-                        <p>{track.track.name}</p>
-                    </div>
-                    )
-                })}
+                
                 <button>save</button>
                 <button>exit</button>
             </div>

@@ -61,6 +61,7 @@ function Playlist() {
             <Nav isUserLoggedIn={true} />
             {playlist && (
                 <div className='playlist'>
+                    {playlist && <button onClick={() => {setEditPresentation(true)}}>Edit Presentation</button>}
                     <div className='playlist-label'>
                         <h4>{playlist.name}</h4>
                         <img src={playlist.images[0].url} alt='Playlist Image' />
@@ -74,7 +75,7 @@ function Playlist() {
                         )
                     })}
                     </div>
-                    {playlist && <button onClick={() => {setEditPresentation(true)}}>Edit Presentation</button>}
+                    
                     {(editPresentation && playlist) && <EditPresentation playlist={playlist} />}
                 </div>
             )}
