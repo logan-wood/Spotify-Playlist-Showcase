@@ -5,9 +5,12 @@ export type User = {
 export type Presentation = {
     id: number;
     playlist_id: string;
-    track_queue: {
-        track_id: string,
-        from: number,
-        to: number
-    }[];
+    track_queue: TrackQueueItem[];
+}
+
+export type TrackQueueItem = {
+    track_id: string,
+    track_name: string,
+    from: number,
+    to: number
 }
