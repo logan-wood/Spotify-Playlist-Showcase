@@ -3,31 +3,32 @@ import { Playlist, Track } from "../@types/spotify";
 import { Presentation, TrackQueueItem } from "../@types/user";
 
 interface Props {
-    playlist: Playlist
+    playlist: Playlist,
+    close: () => void
 }
 
 const EditPresentation = (props: Props) => {
     const [presentation, setPresentation] = useState<Presentation | null>(null);
-    const [trackQueue, setTrackQueue] = useState<TrackQueueItem[]>();
-    const [preExistingIDs, setPreExistingIDs] = useState<string[]>();
+    const [trackQueue, setTrackQueue] = useState<TrackQueueItem[]>([]);
+    const [preExistingIDs, setPreExistingIDs] = useState<string[]>([]);
 
     useEffect(() => {
         getPresentation()
-    }, [])
+    }, []);
 
     // set track queue once presentation is recieved from server
     useEffect(() => {
         if (presentation) { 
             setTrackQueue(presentation.track_queue);
         }
-    }, [presentation])
+    }, [presentation]);
 
     // Create array of IDs already in presentation, to avoid duplicate rendering of tracks
     useEffect(() => {
         if (trackQueue) {
             setPreExistingIDs(trackQueue.map(obj => obj.track_id));
         }
-    }, [trackQueue])
+    }, [trackQueue]);
 
     const getPresentation = async () => {
         try {
@@ -44,7 +45,52 @@ const EditPresentation = (props: Props) => {
                 });
             }
         } catch(error) {
-            console.error('An error occured fetching the presentation: ' + error)
+            console.error('An error occured fetching the presentation: ' + error);
+        };
+    };
+
+    /**
+     * Adds the input `track` to the current presentation. This only affects the local variable, and the data will still need to be saved to the database before exiting.
+     * 
+     * @param track the track to be added to the presentation
+     */
+    const addToPresentation = (track: Track): void => {
+        if (!presentation) {
+            console.log(`There was an error adding ${track.name} to the presentation`);
+        };
+
+        // add new item to track queue, from 0ms to max ms
+        const newTrackQueueItem: TrackQueueItem = { track_id: track.id, track_name: track.name, from: 0, to: track.duration_ms };
+        
+        setTrackQueue([...trackQueue, newTrackQueueItem])
+    };
+
+    /**
+     * Sends the updated `trackQueue` object to the server in a PATCH request
+     */
+    const savePresentation = async (): Promise<void> => {
+        if (!presentation) {
+            console.error('There is no presentation to save');
+            return;
+        };
+
+        try {
+            const response = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/presentations/${presentation.id}`, {
+                method: 'PATCH',
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    track_queue: JSON.stringify(trackQueue)
+                }),
+            });
+
+            if (!response.ok) {
+                console.error('There was an error saving the playlist');
+            };
+        } catch(error) {
+            console.error(error);
         }
     }
 
@@ -68,7 +114,7 @@ const EditPresentation = (props: Props) => {
                             return (
                                 <div>
                                     <div>{track.track.name}</div>
-                                    <button>+</button>
+                                    <button onClick={() => { addToPresentation(track.track) }}>+</button>
                                 </div>
                             )
                         }
@@ -76,8 +122,8 @@ const EditPresentation = (props: Props) => {
                         return (<></>)
                     })
                 )}
-                <button>save</button>
-                <button>exit</button>
+                <button onClick={() => { savePresentation() }}>save</button>
+                <button onClick={() => { props.close() }}>exit</button>
             </div>
         </div>
     )

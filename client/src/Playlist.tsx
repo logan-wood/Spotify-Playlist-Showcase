@@ -76,7 +76,7 @@ function Playlist() {
                     })}
                     </div>
                     
-                    {(editPresentation && playlist) && <EditPresentation playlist={playlist} />}
+                    {(editPresentation && playlist) && <EditPresentation playlist={playlist} close={(): void => { setEditPresentation(false) } } />}
                 </div>
             )}
 
