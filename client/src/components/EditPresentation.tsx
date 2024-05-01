@@ -82,7 +82,7 @@ const EditPresentation = (props: Props) => {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    track_queue: JSON.stringify(trackQueue)
+                    track_queue: trackQueue
                 }),
             });
 

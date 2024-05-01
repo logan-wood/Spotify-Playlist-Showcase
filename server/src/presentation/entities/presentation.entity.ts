@@ -13,7 +13,13 @@ export class Presentation {
 
     @Column()
     playlist_id: string;
-    
-    @Column({ default: '[]' })
-    track_queue: string;
+     
+    @Column({ type: "json", default: null, nullable: false })
+    track_queue: TrackQueue[];
+}
+
+export type TrackQueue = {
+    track_id: string,
+    from: number,
+    to: number
 }

@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreatePresentationDto } from './dto/create-presentation.dto';
 import { UpdatePresentationDto } from './dto/update-presentation.dto';
 import { Repository } from 'typeorm';
-import { Presentation } from './entities/presentation.entity';
+import { Presentation, TrackQueue } from './entities/presentation.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { SpotifyService } from 'src/spotify/spotify.service';
@@ -33,6 +33,7 @@ export class PresentationsService {
     const presentation = new Presentation();
     presentation.user = user;
     presentation.playlist_id = playlist_id;
+    presentation.track_queue = []
 
     const newPresentation = await this.presentationsRepository.save(presentation);
 
@@ -73,7 +74,7 @@ export class PresentationsService {
   } 
 
   update(id: number, updatePresentationDto: UpdatePresentationDto) {
-    const track_queue: string = updatePresentationDto.track_queue.toString();
+    const track_queue: TrackQueue[] = updatePresentationDto.track_queue;
 
     const updatedPresentation = this.presentationsRepository.update(id, { track_queue: track_queue });
 
