@@ -65,6 +65,17 @@ const EditPresentation = (props: Props) => {
         setTrackQueue([...trackQueue, newTrackQueueItem])
     };
 
+    const removeFromPresentation = (item: TrackQueueItem): void => {
+        if (!presentation) {
+            console.error(`There was an error removing ${item.track_name} from the presentation`);
+        }
+
+        // create new track queue object by filtering array against element to be removed
+        const newTrackQueue = trackQueue.filter((curItem: TrackQueueItem) => { return !(Object.is(curItem, item)) });
+
+        setTrackQueue(newTrackQueue)
+    }
+
     /**
      * Sends the updated `trackQueue` object to the server in a PATCH request
      */
@@ -100,10 +111,11 @@ const EditPresentation = (props: Props) => {
         <div>
             <div className="edit-presentation">
                 {/* Tracks already in presentation */}
-                {trackQueue && trackQueue.map((track, index) => {
+                {trackQueue && trackQueue.map((track: TrackQueueItem, index) => {
                     return (
                         <div key={index}>
                             <div>{track.track_name}</div>
+                            <button onClick={() => { removeFromPresentation(track) }}>-</button>
                             {index != 0 && <button>↑</button>}
                             {index != trackQueue.length - 1 && <button>↓</button>}
                         </div>
