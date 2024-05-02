@@ -11,6 +11,7 @@ const EditPresentation = (props: Props) => {
     const [presentation, setPresentation] = useState<Presentation | null>(null);
     const [trackQueue, setTrackQueue] = useState<TrackQueueItem[]>([]);
     const [preExistingIDs, setPreExistingIDs] = useState<string[]>([]);
+    const [successMessage, setSuccessMessage] = useState<string>('');
 
     useEffect(() => {
         getPresentation()
@@ -36,12 +37,11 @@ const EditPresentation = (props: Props) => {
 
             if (response.ok) {
                 const data = await response.json();
-                const track_queue = JSON.parse(data.track_queue);
-
+                
                 setPresentation({
                     id: data.id,
                     playlist_id: data.playlist_id,
-                    track_queue: track_queue
+                    track_queue: data.track_queue
                 });
             }
         } catch(error) {
@@ -86,9 +86,11 @@ const EditPresentation = (props: Props) => {
                 }),
             });
 
-            if (!response.ok) {
+            if (response.ok) {
+                setSuccessMessage('Presentation saved.')
+            } else {
                 console.error('There was an error saving the playlist');
-            };
+            }
         } catch(error) {
             console.error(error);
         }
@@ -124,6 +126,7 @@ const EditPresentation = (props: Props) => {
                 )}
                 <button onClick={() => { savePresentation() }}>save</button>
                 <button onClick={() => { props.close() }}>exit</button>
+                { successMessage && <p>{successMessage}</p>}
             </div>
         </div>
     )
