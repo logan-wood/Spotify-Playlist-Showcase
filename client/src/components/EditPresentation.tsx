@@ -57,6 +57,7 @@ const EditPresentation = (props: Props) => {
     const addToPresentation = (track: Track): void => {
         if (!presentation) {
             console.log(`There was an error adding ${track.name} to the presentation`);
+            return
         };
 
         // add new item to track queue, from 0ms to max ms
@@ -68,12 +69,23 @@ const EditPresentation = (props: Props) => {
     const removeFromPresentation = (item: TrackQueueItem): void => {
         if (!presentation) {
             console.error(`There was an error removing ${item.track_name} from the presentation`);
+            return
         }
 
         // create new track queue object by filtering array against element to be removed
         const newTrackQueue = trackQueue.filter((curItem: TrackQueueItem) => { return !(Object.is(curItem, item)) });
 
         setTrackQueue(newTrackQueue)
+    }
+
+    const moveDown = (item: TrackQueueItem): void => {
+        // error checking, these should never happen
+        if (!presentation) {
+            console.error(`There was an error moving ${item.track_name} down.`)
+        }
+        
+        const itemToMove = trackQueue.find((curItem: TrackQueueItem) => { return Object.is(curItem, item)})
+        console.log(itemToMove)
     }
 
     /**
@@ -126,14 +138,14 @@ const EditPresentation = (props: Props) => {
                     props.playlist.tracks.items.map((track, index) => {
                         if (!preExistingIDs?.includes(track.track.id)) {
                             return (
-                                <div>
+                                <div key={index}>
                                     <div>{track.track.name}</div>
                                     <button onClick={() => { addToPresentation(track.track) }}>+</button>
                                 </div>
                             )
                         }
 
-                        return (<></>)
+                        return (<div key={index}></div>)
                     })
                 )}
                 <button onClick={() => { savePresentation() }}>save</button>
