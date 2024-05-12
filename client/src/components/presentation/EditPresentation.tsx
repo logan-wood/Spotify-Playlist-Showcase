@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Playlist, Track } from "../@types/spotify";
-import { Presentation, TrackQueueItem } from "../@types/user";
+import { Playlist, Track } from "../../@types/spotify";
+import { Presentation, TrackQueueItem } from "../../@types/user";
 
 interface Props {
     playlist: Playlist,

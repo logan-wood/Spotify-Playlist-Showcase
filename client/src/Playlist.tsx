@@ -4,7 +4,7 @@ import WebPlayback from './components/player/Player';
 import { Playlist as PlaylistType, Track } from './@types/spotify';
 import Nav from './components/Navigation';
 import './styles/playlist.scss';
-import EditPresentation from './components/EditPresentation';
+import EditPresentation from './components/presentation/EditPresentation';
 
 interface PlayerRef {
     playTrack: (track_id: string, position_ms: number) => void

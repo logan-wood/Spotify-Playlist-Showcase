@@ -37,4 +37,11 @@ export class PresentationsController {
   remove(@Param('id') id: string) {
     return this.presentationsService.remove(+id);
   }
+
+  @Get('images/:id')
+  async get(@Req() request: Request, @Param('id') presentation_id: number): Promise<string[]> {
+    const currentUser: User = await this.usersService.findOneBySpotifyCookie(request);
+
+    return await this.presentationsService.getImages(presentation_id, currentUser);
+  }
 }

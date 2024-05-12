@@ -148,13 +148,18 @@ export class SpotifyService {
         }
     }
 
-    async getTrack(track_id: string): Promise<Track> {
+    async getTrack(user: User, track_id: string): Promise<Track> {
         try {
-            const response = await fetch(`https://api.spotify.com/v1/tracks/${track_id}`)
+            const response = await fetch(`https://api.spotify.com/v1/tracks/${track_id}`, {
+                headers: { Authorization: `Bearer ${user.access_token}` },
+                credentials: 'include'
+            })
 
             if (response.ok) {
                 const data = await response.json();
                 return data;
+            } else {
+                console.error(`ERROR: Failed to fetch track: ${track_id}. ${response.status}, ${response.status}`)
             }
         } catch(error) {
             console.log('There was an error fetching the playlist: ' + error.message);

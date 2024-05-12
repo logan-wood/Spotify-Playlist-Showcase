@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { SpotifyService } from 'src/spotify/spotify.service';
 import { UsersService } from 'src/users/users.service';
+import { Track } from 'src/spotify/spotify.types';
 
 @Injectable()
 export class PresentationsService {
@@ -48,7 +49,22 @@ export class PresentationsService {
     return await this.presentationsRepository.find();
   }
 
-  async findOne(playlist_id: string, user: User) {
+  /**
+   * Finds a presentation by it's ID.
+   * @param id the id of the presentation to fetch
+   * @returns The presentation object, or null if it does not exist
+   */
+  async find(id: number): Promise<Presentation> {
+    return await this.presentationsRepository.findOneBy({ id: id })
+  }
+
+    /**
+     * Finds a presentation via the Spotify playlist_id and the user. Creates a new presentation if not found.
+     * @param playlist_id 
+     * @param user 
+     * @returns 
+     */
+  async findOne(playlist_id: string, user: User): Promise<Presentation> {
     const presentation = await this.presentationsRepository.findOne({
       where: {
         playlist_id: playlist_id,
@@ -85,5 +101,27 @@ export class PresentationsService {
 
   remove(id: number) {
     return `This action removes a #${id} presentation`;
+  }
+
+  async getImages(presentation_id: number, user: User): Promise<string[]> {
+    // get presetation from db
+    const presentation: Presentation = await this.find(presentation_id);
+    if (!presentation) {
+      console.error(`ERROR: There was an error retrieving the presentation ${presentation_id}`);
+      return;
+    }
+
+    let imageArray: string[] = []; // array of image URLs
+
+    await Promise.all(presentation.track_queue.map(async (item) => {
+      const track: Track = await this.spotifyService.getTrack(user, item.track_id);
+      if (track) {
+        imageArray.push(track.album.images[0].url);
+      } else {
+        console.error(`ERROR: Failed to fetch current track: ${item.track_id}`);
+      }
+    }));
+
+    return imageArray;
   }
 }
