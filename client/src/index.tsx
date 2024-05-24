@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './styles/index.scss';
 import App from './App';
@@ -9,6 +9,7 @@ import PrivateRoutes from './utils/PrivateRoutes';
 import Login from './Login';
 import Playlist from './Playlist';
 import About from './About';
+import PlayPresentation from './components/presentation/PlayPresentation';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -21,6 +22,7 @@ root.render(
           <Route element={<PrivateRoutes />}>
             <Route element={<Dashboard />} path="/dashboard" />
             <Route element={<Playlist />} path='/playlist/:playlist_id' />
+            <Route element={<PlayPresentation />} path='/presentation/:presentation_id' />
           </Route>
           <Route element={<About />} path='/about' />
           <Route element={<Login />} path='/login' />

@@ -2,24 +2,58 @@ import { useEffect, useRef, useState } from "react";
 import { Presentation, TrackQueueItem } from "../../@types/user";
 import { DUMMY_PRESENTATION } from "./DUMMY_PRESENTATION";
 import WebPlayback from "../player/Player";
+import { useParams } from "react-router-dom";
 
-interface props {
-    presentation: Presentation
-};
 
 interface PlayerRef {
-    playTrack: (track_id: string, position_ms: number) => void
+    playTrack: (track_id: string, position_ms: number) => void;
+    playerState: boolean;
 }
 
-const playPresentation = (props: props) => {
+const PlayPresentation = () => {
     const [token, setToken] = useState<string>('');
     const [imageURLs, setImageURLs] = useState<string[]>([]);
-    const [currentTrack, setCurrentTrack] = useState<TrackQueueItem>(props.presentation.track_queue[0]);
+    const [presentation, setPresentation] = useState<Presentation | null>(null);
+    const [currentTrack, setCurrentTrack] = useState<TrackQueueItem | null>(null);
+    const [ready, setReady] = useState<boolean>(false); // is everything needed for presentation healthy?
 
     const playerRef = useRef<PlayerRef>(null);
+    
+    const { presentation_id } = useParams<{ presentation_id: string }>();
 
-    const getImages = async() => {
-        const response = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/presentations/images/${props.presentation.id}`);
+    useEffect(() => {
+        getPresentation();
+        getImages();
+        getAccessToken();
+    }, [])
+
+    // check and update ready boolean whenever relevant variables are updates
+    useEffect(() => {
+        checkReady();
+    }, [presentation, token, imageURLs, playerRef.current?.playerState])
+
+    useEffect(() => {
+        // console.log(`Player ready: ${ready}`);
+    }, [ready])
+    
+    const getPresentation = async () => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/presentations/${presentation_id}`)
+
+            if (response.ok) {
+                const data = await response.json();
+
+                setPresentation(data)
+            } else {
+                console.error(`ERROR ${response.status}: There was an error fetching the presentation`);
+            }
+        } catch {
+            console.error('ERROR: There was an error fetching the presentation');
+        }
+    }
+
+    const getImages = async () => {
+        const response = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/presentations/images/${presentation_id}`);
 
         if (response.ok) {
             const data = await response.json();
@@ -37,34 +71,43 @@ const playPresentation = (props: props) => {
             
             setToken(accessToken);
         } catch (error) {
-            console.error(`ERROR: error getting access token: ${error}`);
+            console.log(error);
+        }
+    }
+
+    const checkReady = () => {
+        // CHANGE CONDITION FOR IMAGEURL LENGTH AND PRESENTATION TRACK QUEUE LENGTH TO ==
+        if (presentation && token && playerRef.current) {
+            // check web playback can be reached and is ready
+            setReady(playerRef.current.playerState)
+        } else {
+            // if (!presentation) {
+            //     console.log('presentation');
+            // }
+            // if (!token) {
+            //     console.log('token');
+            // }
+            // if (imageURLs.length != presentation?.track_queue.length) {
+            //     console.log('track queue length and image url length')
+            //     console.log(imageURLs.length)
+            //     console.log('track queue' + presentation?.track_queue.length)
+            // }
+            // if (!playerRef.current) {
+            //     console.log('playerref')
+            // }
         }
     }
 
     const playTrack = async (track_id: string, position_ms: number) => {
         playerRef.current?.playTrack(track_id, position_ms);
-        // got here
     }
-
-    useEffect(() => {
-        getImages();
-        getAccessToken();
-    }, [])
-
-    // check access token and images were fetched successfully before starting presentation
-    useEffect(() => {
-        if (imageURLs.length == 0 || token == '') {
-            console.log('loading presentation dependencies...')
-            return;
-        }
-
-
-    })
 
     return (
         <>
-            <></>
+            <div>Presentation...</div>
             {token && ( <WebPlayback ref={playerRef} token={token} /> )}
         </>
     )
 }
+
+export default PlayPresentation;

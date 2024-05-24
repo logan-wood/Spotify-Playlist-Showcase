@@ -3,7 +3,8 @@ import { Playlist, Track } from "../../@types/spotify";
 import { Presentation, TrackQueueItem } from "../../@types/user";
 
 interface Props {
-    playlist: Playlist,
+    playlist: Playlist
+    presentation: Presentation
     close: () => void
 }
 
@@ -14,15 +15,12 @@ const EditPresentation = (props: Props) => {
     const [successMessage, setSuccessMessage] = useState<string>('');
 
     useEffect(() => {
-        getPresentation()
-    }, []);
-
-    // set track queue once presentation is recieved from server
-    useEffect(() => {
         if (presentation) { 
             setTrackQueue(presentation.track_queue);
+        } else {
+            console.error('ERROR: Presentation is empty');
         }
-    }, [presentation]);
+    }, []);
 
     // Create array of IDs already in presentation, to avoid duplicate rendering of tracks
     useEffect(() => {
@@ -30,24 +28,6 @@ const EditPresentation = (props: Props) => {
             setPreExistingIDs(trackQueue.map(obj => obj.track_id));
         }
     }, [trackQueue]);
-
-    const getPresentation = async () => {
-        try {
-            const response = await fetch(process.env.REACT_APP_SERVER_DOMAIN + `/presentations/${props.playlist.id}`, { credentials: 'include' });
-
-            if (response.ok) {
-                const data = await response.json();
-                
-                setPresentation({
-                    id: data.id,
-                    playlist_id: data.playlist_id,
-                    track_queue: data.track_queue
-                });
-            }
-        } catch(error) {
-            console.error('An error occured fetching the presentation: ' + error);
-        };
-    };
 
     /**
      * Adds the input `track` to the current presentation. This only affects the local variable, and the data will still need to be saved to the database before exiting.

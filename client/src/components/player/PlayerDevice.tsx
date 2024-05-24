@@ -10,7 +10,6 @@ const PlayerDevice = forwardRef((props: {}, ref: Ref<DeviceRef>) => {
     // const deviceRef = useRef<DeviceRef>(null);
 
     useImperativeHandle(ref, () => ({ playTrack: (track_id: string, position_ms: number) => playTrack(track_id, position_ms)}), [device])
-    // need to figure out how playing songs will work
     
     const playTrack = async (track_id: string, position_ms: number) => {
         console.log({ track_id, position_ms })
