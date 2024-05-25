@@ -54,7 +54,7 @@ export class PresentationsService {
    * @param id the id of the presentation to fetch
    * @returns The presentation object, or null if it does not exist
    */
-  async find(id: number): Promise<Presentation> {
+  async findOne(id: number): Promise<Presentation> {
     return await this.presentationsRepository.findOneBy({ id: id })
   }
 
@@ -64,7 +64,7 @@ export class PresentationsService {
      * @param user 
      * @returns 
      */
-  async findOne(playlist_id: string, user: User): Promise<Presentation> {
+  async findOneBySpotifyID(playlist_id: string, user: User): Promise<Presentation> {
     const presentation = await this.presentationsRepository.findOne({
       where: {
         playlist_id: playlist_id,
@@ -105,7 +105,7 @@ export class PresentationsService {
 
   async getImages(presentation_id: number, user: User): Promise<string[]> {
     // get presetation from db
-    const presentation: Presentation = await this.find(presentation_id);
+    const presentation: Presentation = await this.findOne(presentation_id);
     if (!presentation) {
       console.error(`ERROR: There was an error retrieving the presentation ${presentation_id}`);
       return;

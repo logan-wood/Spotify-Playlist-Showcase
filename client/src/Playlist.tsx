@@ -46,7 +46,7 @@ function Playlist() {
         }
 
         try {
-            const response = await fetch(process.env.REACT_APP_SERVER_DOMAIN + `/presentations/${playlist.id}`, { credentials: 'include' });
+            const response = await fetch(process.env.REACT_APP_SERVER_DOMAIN + `/presentations/spotifyPlaylistID/${playlist.id}`, { credentials: 'include' });
 
             if (response.ok) {
                 const data = await response.json();

@@ -9,10 +9,10 @@ interface Props {
 }
 
 const EditPresentation = (props: Props) => {
-    const [presentation, setPresentation] = useState<Presentation | null>(null);
     const [trackQueue, setTrackQueue] = useState<TrackQueueItem[]>([]);
     const [preExistingIDs, setPreExistingIDs] = useState<string[]>([]);
     const [successMessage, setSuccessMessage] = useState<string>('');
+    const presentation = props.presentation;
 
     useEffect(() => {
         if (presentation) { 

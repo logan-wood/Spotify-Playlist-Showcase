@@ -33,7 +33,7 @@ const PlayPresentation = () => {
     }, [presentation, token, imageURLs, playerRef.current?.playerState])
 
     useEffect(() => {
-        // console.log(`Player ready: ${ready}`);
+        console.log(`Player ready: ${ready}`);
     }, [ready])
     
     const getPresentation = async () => {
@@ -76,25 +76,11 @@ const PlayPresentation = () => {
     }
 
     const checkReady = () => {
-        // CHANGE CONDITION FOR IMAGEURL LENGTH AND PRESENTATION TRACK QUEUE LENGTH TO ==
-        if (presentation && token && playerRef.current) {
+        if (presentation && token && imageURLs.length == presentation.track_queue.length && playerRef.current) {
             // check web playback can be reached and is ready
-            setReady(playerRef.current.playerState)
+            setReady(playerRef.current.playerState);
         } else {
-            // if (!presentation) {
-            //     console.log('presentation');
-            // }
-            // if (!token) {
-            //     console.log('token');
-            // }
-            // if (imageURLs.length != presentation?.track_queue.length) {
-            //     console.log('track queue length and image url length')
-            //     console.log(imageURLs.length)
-            //     console.log('track queue' + presentation?.track_queue.length)
-            // }
-            // if (!playerRef.current) {
-            //     console.log('playerref')
-            // }
+            console.error('checkReady(): ERROR: A condition required to play the presentation has not been met');
         }
     }
 
@@ -105,6 +91,7 @@ const PlayPresentation = () => {
     return (
         <>
             <div>Presentation...</div>
+            {ready && <p>Ready</p>}
             {token && ( <WebPlayback ref={playerRef} token={token} /> )}
         </>
     )
