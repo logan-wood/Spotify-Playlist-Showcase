@@ -21,11 +21,16 @@ export class PresentationsController {
     return this.presentationsService.findAll();
   }
 
-  @Get(':playlist_id')
-  async findOne(@Req() request: Request, @Param('playlist_id') playlist_id: string) {
+  @Get(':id')
+  async findOne(@Param('id') id: number) {
+    return this.presentationsService.findOne(id)
+  }
+
+  @Get('spotifyPlaylistID/:playlist_id')
+  async findOneBySpotifyID(@Req() request: Request, @Param('playlist_id') playlist_id: string) {
     const currentUser: User = await this.usersService.findOneBySpotifyCookie(request);
 
-    return this.presentationsService.findOne(playlist_id, currentUser);
+    return this.presentationsService.findOneBySpotifyID(playlist_id, currentUser);
   }
 
   @Patch(':id')
@@ -36,5 +41,12 @@ export class PresentationsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.presentationsService.remove(+id);
+  }
+
+  @Get('images/:id')
+  async get(@Req() request: Request, @Param('id') presentation_id: number): Promise<string[]> {
+    const currentUser: User = await this.usersService.findOneBySpotifyCookie(request);
+
+    return await this.presentationsService.getImages(presentation_id, currentUser);
   }
 }

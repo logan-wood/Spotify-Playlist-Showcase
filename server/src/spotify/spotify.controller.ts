@@ -43,8 +43,10 @@ export class SpotifyController {
     }
 
     @Get('track')
-    async getTrack(@Query('track_id') track_id: string): Promise<Track> {
-        return await this.spotifyService.getTrack(track_id)
+    async getTrack(@Req() request: Request, @Query('track_id') track_id: string): Promise<Track> {
+        const currentUser: User = await this.usersService.findOneBySpotifyCookie(request);
+
+        return await this.spotifyService.getTrack(currentUser, track_id);
     }
 
     @Get('play')

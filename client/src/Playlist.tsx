@@ -1,30 +1,30 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import WebPlayback from './components/player/Player';
 import { Playlist as PlaylistType, Track } from './@types/spotify';
 import Nav from './components/Navigation';
 import './styles/playlist.scss';
-import EditPresentation from './components/EditPresentation';
-
-interface PlayerRef {
-    playTrack: (track_id: string, position_ms: number) => void
-}
+import EditPresentation from './components/presentation/EditPresentation';
+import PlayPresentation from './components/presentation/PlayPresentation';
+import { Presentation } from './@types/user';
 
 function Playlist() {
     const [token, setToken] = useState<string>('');
-    const [playlist, setPlaylist] = useState<PlaylistType | null>(null)
+    const [playlist, setPlaylist] = useState<PlaylistType | null>(null);
+    const [presentation, setPresentation] = useState<Presentation | null>(null);
     const [editPresentation, setEditPresentation] = useState<boolean>(false);
 
     const { playlist_id } = useParams();
 
-    const playerRef = useRef<PlayerRef>(null);
-
-    // reference to webPlayback component
+    const navigate = useNavigate()
 
     useEffect(() => {
-        getAccessToken();
         getPlaylistData();
     }, [])
+
+    useEffect(() => {
+        getPresentation();
+    }, [playlist])
 
     const getPlaylistData = async (): Promise<void> => {
         try {
@@ -39,22 +39,32 @@ function Playlist() {
         }
     }
 
-    const getAccessToken = async () => {
-        try {
-            const response = await fetch(process.env.REACT_APP_SERVER_DOMAIN + '/users/accessToken', { credentials: 'include' });
-            const accessToken: string = await response.text();
-            
-            setToken(accessToken);
-        } catch (error) {
-            console.log(error);
+    const getPresentation = async () => {
+        if (!playlist) {
+            console.error('Playlist is null');
+            return;
         }
-    }
 
-    const playTrack = async (track_id: string, position_ms: number) => {
-        console.log(playerRef.current)
-        playerRef.current?.playTrack(track_id, position_ms);
-        // got here
-    }
+        try {
+            const response = await fetch(process.env.REACT_APP_SERVER_DOMAIN + `/presentations/spotifyPlaylistID/${playlist.id}`, { credentials: 'include' });
+
+            if (response.ok) {
+                const data = await response.json();
+                
+                setPresentation({
+                    id: data.id,
+                    playlist_id: data.playlist_id,
+                    track_queue: data.track_queue
+                });
+            }
+        } catch(error) {
+            console.error('An error occured fetching the presentation: ' + error);
+        };
+    };
+
+    const openPresentation = () => {
+        navigate(`/presentation/${presentation?.id}`)
+    } 
 
     return (
         <>
@@ -70,19 +80,15 @@ function Playlist() {
                     {playlist?.tracks.items.map((track, index) => {
                         return (
                         <div key={index} className='track'>
-                            <p onClick={() => { playTrack(track.track.id, 0) }}>▶ {track.track.name}</p>
                         </div>
                         )
                     })}
                     </div>
                     
-                    {(editPresentation && playlist) && <EditPresentation playlist={playlist} close={(): void => { setEditPresentation(false) } } />}
+                    {(editPresentation && presentation && playlist) && <EditPresentation playlist={playlist} presentation={presentation} close={(): void => { setEditPresentation(false) } } />}
+                    {presentation && <button onClick={openPresentation}>Play Showcase</button>}
                 </div>
             )}
-
-            
-
-            {token && ( <WebPlayback ref={playerRef} token={token} /> )}
         </>
     )
 }
