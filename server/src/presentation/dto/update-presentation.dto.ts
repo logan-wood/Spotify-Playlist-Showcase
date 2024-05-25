@@ -9,5 +9,6 @@ export class UpdatePresentationDto extends PartialType(CreatePresentationDto) {
         track_id: string,
         from: number;
         to: number;
+        image_url: string;
     }[]
 }

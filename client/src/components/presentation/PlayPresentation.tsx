@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { Presentation, TrackQueueItem } from "../../@types/user";
-import { DUMMY_PRESENTATION } from "./DUMMY_PRESENTATION";
 import WebPlayback from "../player/Player";
 import { useParams } from "react-router-dom";
 

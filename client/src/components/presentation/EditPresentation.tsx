@@ -35,14 +35,14 @@ const EditPresentation = (props: Props) => {
      * @param track the track to be added to the presentation
      */
     const addToPresentation = (track: Track): void => {
+        console.log(track)
         if (!presentation) {
             console.log(`There was an error adding ${track.name} to the presentation`);
             return
         };
 
         // add new item to track queue, from 0ms to max ms
-        const newTrackQueueItem: TrackQueueItem = { track_id: track.id, track_name: track.name, from: 0, to: track.duration_ms };
-        
+        const newTrackQueueItem: TrackQueueItem = { track_id: track.id, track_name: track.name, from: 0, to: track.duration_ms, image_url: track.album.images[0].url };
         setTrackQueue([...trackQueue, newTrackQueueItem])
     };
 

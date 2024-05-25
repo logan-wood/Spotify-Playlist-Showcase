@@ -12,5 +12,6 @@ export type TrackQueueItem = {
     track_id: string,
     track_name: string,
     from: number,
-    to: number
+    to: number,
+    image_url: string
 }
