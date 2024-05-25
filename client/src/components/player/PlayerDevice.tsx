@@ -14,8 +14,10 @@ const PlayerDevice = forwardRef((props: {}, ref: Ref<DeviceRef>) => {
     const playTrack = async (track_id: string, position_ms: number) => {
         console.log({ track_id, position_ms })
         console.log(device)
-        if (device == null) return;
-
+        if (device == null) {
+            console.error('ERROR: Error starting playback. Device is null');
+            return;
+        }
         const response = await fetch(process.env.REACT_APP_SERVER_DOMAIN + `/spotify/play?device_id=${device.device_id}&track_id=${track_id}&position_ms=${position_ms}`);
         console.log(response)
         if (!response.ok) {

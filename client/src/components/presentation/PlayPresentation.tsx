@@ -15,6 +15,7 @@ const PlayPresentation = () => {
     const [imageURLs, setImageURLs] = useState<string[]>([]);
     const [presentation, setPresentation] = useState<Presentation | null>(null);
     const [currentTrack, setCurrentTrack] = useState<TrackQueueItem | null>(null);
+    const [currentImageURL, setCurrentImageURL] = useState<string>('');
     const [ready, setReady] = useState<boolean>(false); // is everything needed for presentation healthy?
 
     const playerRef = useRef<PlayerRef>(null);
@@ -88,10 +89,58 @@ const PlayPresentation = () => {
         playerRef.current?.playTrack(track_id, position_ms);
     }
 
+    const startPresentation = async () => {
+        if (!ready || !presentation) {
+            console.error('ERROR: not ready to start presentation')
+            return;
+        }
+
+        let elapsed = 0;
+        let position = 0;
+        let current: TrackQueueItem = presentation.track_queue[position]
+
+        while (position < presentation.track_queue.length) {
+            console.log('playing ' + current.track_name)
+            playTrack(current.track_id, current.from);
+            setCurrentImageURL(imageURLs[position]);
+
+            // wait
+            console.log(`waiting for ${current.to - current.from} seconds`);
+            // await wait(current.to - current.from);
+            await wait(15000)
+
+            position++;
+            current = presentation.track_queue[position];
+        }
+    }
+
+    const wait = (ms: number) => {
+        return new Promise<void>((resolve) => {
+            const timeout = setTimeout(() => {
+                clearTimeout(timeout);
+                resolve();
+            }, ms);
+
+            const onNext = () => {
+                clearTimeout(timeout);
+                resolve();
+                document.removeEventListener('manualNext', onNext);
+            };
+
+            document.addEventListener('manualNext', onNext)
+        });
+    }
+
     return (
         <>
             <div>Presentation...</div>
-            {ready && <p>Ready</p>}
+            {ready && (
+                <div>
+                    <p>Ready</p>
+                    <button onClick={startPresentation}>Start</button>
+                    {currentImageURL != '' && <img src={currentImageURL} alt='Album Art'></img>}
+                </div>
+            )}
             {token && ( <WebPlayback ref={playerRef} token={token} /> )}
         </>
     )
