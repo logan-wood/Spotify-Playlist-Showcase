@@ -11,7 +11,6 @@ interface PlayerRef {
 
 const PlayPresentation = () => {
     const [token, setToken] = useState<string>('');
-    const [imageURLs, setImageURLs] = useState<string[]>([]);
     const [presentation, setPresentation] = useState<Presentation | null>(null);
     const [currentTrack, setCurrentTrack] = useState<TrackQueueItem | null>(null);
     const [currentImageURL, setCurrentImageURL] = useState<string>('');
@@ -23,14 +22,13 @@ const PlayPresentation = () => {
 
     useEffect(() => {
         getPresentation();
-        getImages();
         getAccessToken();
     }, [])
 
     // check and update ready boolean whenever relevant variables are updates
     useEffect(() => {
         checkReady();
-    }, [presentation, token, imageURLs, playerRef.current?.playerState])
+    }, [presentation, token, playerRef.current?.playerState])
 
     useEffect(() => {
         console.log(`Player ready: ${ready}`);
@@ -52,18 +50,6 @@ const PlayPresentation = () => {
         }
     }
 
-    const getImages = async () => {
-        const response = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/presentations/images/${presentation_id}`);
-
-        if (response.ok) {
-            const data = await response.json();
-
-            setImageURLs(data);
-        } else {
-            console.error(`ERROR: There was an error fetching presentaiton images.`);
-        }
-    }
-
     const getAccessToken = async () => {
         try {
             const response = await fetch(process.env.REACT_APP_SERVER_DOMAIN + '/users/accessToken', { credentials: 'include' });
@@ -76,7 +62,7 @@ const PlayPresentation = () => {
     }
 
     const checkReady = () => {
-        if (presentation && token && imageURLs.length == presentation.track_queue.length && playerRef.current) {
+        if (presentation && playerRef.current) {
             // check web playback can be reached and is ready
             setReady(playerRef.current.playerState);
         } else {
@@ -94,14 +80,16 @@ const PlayPresentation = () => {
             return;
         }
 
+        // set position to first track in presentation
         let elapsed = 0;
         let position = 0;
         let current: TrackQueueItem = presentation.track_queue[position]
 
+        // play presentation logic
         while (position < presentation.track_queue.length) {
             console.log('playing ' + current.track_name)
             playTrack(current.track_id, current.from);
-            setCurrentImageURL(imageURLs[position]);
+            setCurrentImageURL(current.image_url);
 
             // wait
             console.log(`waiting for ${current.to - current.from} seconds`);
@@ -111,6 +99,8 @@ const PlayPresentation = () => {
             position++;
             current = presentation.track_queue[position];
         }
+
+        // presentation finished
     }
 
     const wait = (ms: number) => {
