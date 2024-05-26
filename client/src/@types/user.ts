@@ -13,5 +13,6 @@ export type TrackQueueItem = {
     track_name: string,
     from: number,
     to: number,
+    track_length: number, // max length of track
     image_url: string
 }

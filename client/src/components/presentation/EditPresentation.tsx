@@ -42,7 +42,15 @@ const EditPresentation = (props: Props) => {
         };
 
         // add new item to track queue, from 0ms to max ms
-        const newTrackQueueItem: TrackQueueItem = { track_id: track.id, track_name: track.name, from: 0, to: track.duration_ms, image_url: track.album.images[0].url };
+        const newTrackQueueItem: TrackQueueItem = { 
+            track_id: track.id,
+            track_name: track.name,
+            from: 0,
+            to: track.duration_ms,
+            track_length: track.duration_ms,
+            image_url: track.album.images[0].url 
+        };
+
         setTrackQueue([...trackQueue, newTrackQueueItem])
     };
 
@@ -110,6 +118,12 @@ const EditPresentation = (props: Props) => {
                             <button onClick={() => { removeFromPresentation(track) }}>-</button>
                             {index != 0 && <button>↑</button>}
                             {index != trackQueue.length - 1 && <button>↓</button>}
+
+                            <label htmlFor='from_ms'>From:</label>
+                            <input type='number' name='from_ms' id='from_ms' defaultValue='0' onChange={event => track.from = event.target.value as unknown as number} />
+
+                            <label htmlFor='to_ms'>To:</label>
+                            <input type='number' name='to_ms' id='to_ms' defaultValue={track.track_length} onChange={event => track.to = event.target.value as unknown as number} />
                         </div>
                     )
                 })}
