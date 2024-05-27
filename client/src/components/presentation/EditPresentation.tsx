@@ -68,7 +68,7 @@ const EditPresentation = (props: Props) => {
 
     /**
      * Move a trackQueueItem object 1 down in the trackQueue. Currently only moves down by 1.
-     * TODO: Allow user to specify index they want to move the track to. (i.e. allow drag and drop )
+     * TODO: Allow user to specify index they want to move the track to. (i.e. allow drag and drop)
      * 
      * @param item The item to be moved down in the queue
      */
@@ -102,6 +102,45 @@ const EditPresentation = (props: Props) => {
             setTrackQueue(newTrackQueue);
         } else {
             console.error(`ERROR: Error moving ${item.track_name} down.`);
+        }
+    }
+
+    /**
+     * Move a trackQueueItem object 1 up in the trackQueue. Currently only moves up by 1.
+     * TODO: Allow user to specify index they want to move the track to. (i.e. allow drag and drop)
+     * 
+     * @param item The item to be moved down in the queue
+     */
+    const moveUp = (item: TrackQueueItem): void => {
+        // error checking, these should never happen
+        if (!presentation) {
+            console.error(`There was an error moving ${item.track_name} down.`);
+        }
+        
+        let i = 0;
+        const itemToMove: TrackQueueItem = trackQueue.find((curItem: TrackQueueItem) => {
+            const match = Object.is(curItem, item); // returns 'true' if correct track is found.
+
+            if (match) {
+                return match // return without incrementing i
+            }
+
+            // increment i and return false (iterate again)
+            i++;
+            return false;
+        }) as TrackQueueItem;
+        
+        // null check before swapping
+        if (itemToMove) {
+            let newTrackQueue = Array.from(trackQueue);
+
+            const temp = newTrackQueue[i -1];
+            newTrackQueue[i - 1] = itemToMove;
+            newTrackQueue[i] = temp;
+
+            setTrackQueue(newTrackQueue);
+        } else {
+            console.error(`ERROR: Error moving ${item.track_name} up.`);
         }
     }
 
@@ -145,7 +184,7 @@ const EditPresentation = (props: Props) => {
                         <div key={index}>
                             <div>{track.track_name}</div>
                             <button onClick={() => { removeFromPresentation(track) }}>-</button>
-                            {index != 0 && <button>↑</button>}
+                            {index != 0 && <button onClick={() => moveUp(track)}>↑</button>}
                             {index != trackQueue.length - 1 && <button onClick={() => moveDown(track)}>↓</button>}
 
                             <label htmlFor='from_ms'>From:</label>
