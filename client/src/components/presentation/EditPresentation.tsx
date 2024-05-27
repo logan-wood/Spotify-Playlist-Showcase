@@ -66,14 +66,43 @@ const EditPresentation = (props: Props) => {
         setTrackQueue(newTrackQueue)
     }
 
+    /**
+     * Move a trackQueueItem object 1 down in the trackQueue. Currently only moves down by 1.
+     * TODO: Allow user to specify index they want to move the track to. (i.e. allow drag and drop )
+     * 
+     * @param item The item to be moved down in the queue
+     */
     const moveDown = (item: TrackQueueItem): void => {
         // error checking, these should never happen
         if (!presentation) {
-            console.error(`There was an error moving ${item.track_name} down.`)
+            console.error(`There was an error moving ${item.track_name} down.`);
         }
         
-        const itemToMove = trackQueue.find((curItem: TrackQueueItem) => { return Object.is(curItem, item)})
-        console.log(itemToMove)
+        let i = 0;
+        const itemToMove: TrackQueueItem = trackQueue.find((curItem: TrackQueueItem) => {
+            const match = Object.is(curItem, item); // returns 'true' if correct track is found.
+
+            if (match) {
+                return match // return without incrementing i
+            }
+
+            // increment i and return false (iterate again)
+            i++;
+            return false;
+        }) as TrackQueueItem;
+        
+        // null check before swapping
+        if (itemToMove) {
+            let newTrackQueue = Array.from(trackQueue);
+
+            const temp = newTrackQueue[i + 1];
+            newTrackQueue[i + 1] = itemToMove;
+            newTrackQueue[i] = temp;
+
+            setTrackQueue(newTrackQueue);
+        } else {
+            console.error(`ERROR: Error moving ${item.track_name} down.`);
+        }
     }
 
     /**
@@ -117,13 +146,13 @@ const EditPresentation = (props: Props) => {
                             <div>{track.track_name}</div>
                             <button onClick={() => { removeFromPresentation(track) }}>-</button>
                             {index != 0 && <button>↑</button>}
-                            {index != trackQueue.length - 1 && <button>↓</button>}
+                            {index != trackQueue.length - 1 && <button onClick={() => moveDown(track)}>↓</button>}
 
                             <label htmlFor='from_ms'>From:</label>
-                            <input type='number' name='from_ms' id='from_ms' defaultValue='0' onChange={event => track.from = event.target.value as unknown as number} />
+                            <input type='number' name='from_ms' id='from_ms' defaultValue={track.from} onChange={event => track.from = event.target.value as unknown as number} />
 
                             <label htmlFor='to_ms'>To:</label>
-                            <input type='number' name='to_ms' id='to_ms' defaultValue={track.track_length} onChange={event => track.to = event.target.value as unknown as number} />
+                            <input type='number' name='to_ms' id='to_ms' defaultValue={track.to} onChange={event => track.to = event.target.value as unknown as number} />
                         </div>
                     )
                 })}
