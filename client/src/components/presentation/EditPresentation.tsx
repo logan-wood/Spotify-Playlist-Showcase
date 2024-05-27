@@ -1,16 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Playlist, Track } from "../../@types/spotify";
 import { Presentation, TrackQueueItem } from "../../@types/user";
 
 interface Props {
     playlist: Playlist
     presentation: Presentation
+    handleTrackQueueChange: (presentation: Presentation) => void
     close: () => void
 }
 
 const EditPresentation = (props: Props) => {
     const [trackQueue, setTrackQueue] = useState<TrackQueueItem[]>([]);
-    const [preExistingIDs, setPreExistingIDs] = useState<string[]>([]);
+    const [preExistingIDs, setPreExistingIDs] = useState<string[]>([]); // Tracks not yet in presentation,
     const [successMessage, setSuccessMessage] = useState<string>('');
     const presentation = props.presentation;
 
@@ -35,7 +36,6 @@ const EditPresentation = (props: Props) => {
      * @param track the track to be added to the presentation
      */
     const addToPresentation = (track: Track): void => {
-        console.log(track)
         if (!presentation) {
             console.log(`There was an error adding ${track.name} to the presentation`);
             return
@@ -166,7 +166,11 @@ const EditPresentation = (props: Props) => {
             });
 
             if (response.ok) {
-                setSuccessMessage('Presentation saved.')
+                setSuccessMessage('Presentation saved.');
+                
+                // update presentation object in parent component
+                presentation.track_queue = trackQueue;
+                props.handleTrackQueueChange(presentation);
             } else {
                 console.error('There was an error saving the playlist');
             }

@@ -13,9 +13,7 @@ function Playlist() {
     const [playlist, setPlaylist] = useState<PlaylistType | null>(null);
     const [presentation, setPresentation] = useState<Presentation | null>(null);
     const [editPresentation, setEditPresentation] = useState<boolean>(false);
-
     const { playlist_id } = useParams();
-
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -64,7 +62,15 @@ function Playlist() {
 
     const openPresentation = () => {
         navigate(`/presentation/${presentation?.id}`)
-    } 
+    };
+
+    /**
+     * Passed into <EditPresentation /> child component, to allow this component's presentation object to remain current.
+     * @param presentation New presentation object (with updated track queue)
+     */
+    const handleTrackQueueChange = (presentation: Presentation) => {
+        setPresentation(presentation)
+    }
 
     return (
         <>
@@ -85,7 +91,7 @@ function Playlist() {
                     })}
                     </div>
                     
-                    {(editPresentation && presentation && playlist) && <EditPresentation playlist={playlist} presentation={presentation} close={(): void => { setEditPresentation(false) } } />}
+                    {(editPresentation && presentation && playlist) && <EditPresentation playlist={playlist} presentation={presentation} close={(): void => { setEditPresentation(false) }} handleTrackQueueChange={handleTrackQueueChange} />}
                     {presentation && <button onClick={openPresentation}>Play Showcase</button>}
                 </div>
             )}
