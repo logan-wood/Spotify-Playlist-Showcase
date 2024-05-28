@@ -5,23 +5,20 @@ import PlayerErrors from './PlayerErrors';
 
 interface PlayerRef {
     playTrack: (track_id: string, position_ms: number) => void;
-    playerState: boolean;
 }
 
 interface DeviceRef {
     playTrack: (track_id: string, position_ms: number) => void;
 }
 
-const WebPlayback = forwardRef((props: { token: string }, ref: Ref<PlayerRef>) => {
+const WebPlayback = forwardRef((props: { token: string, setIsPlaybackReady: (isReady: boolean) => void }, ref: Ref<PlayerRef>) => {
     const deviceRef = useRef<DeviceRef>(null);
-    const [isPlaybackReady, setIsPlaybackReady] = useState<boolean>(false);
 
     useImperativeHandle(ref, () => ({ 
         playTrack: (track_id: string, position_ms: number) => {
             deviceRef.current?.playTrack(track_id, position_ms);
         }, 
-        playerState: isPlaybackReady
-    }), [isPlaybackReady]);
+    }), []);
 
     const getOAuthToken: Spotify.PlayerInit["getOAuthToken"] = useCallback(
         callback => callback(props.token),
@@ -35,7 +32,7 @@ const WebPlayback = forwardRef((props: { token: string }, ref: Ref<PlayerRef>) =
             connectOnInitialized={true}
             initialVolume={0.5}
         >
-            <PlaybackWrapper setIsPlaybackReady={setIsPlaybackReady}>
+            <PlaybackWrapper setIsPlaybackReady={props.setIsPlaybackReady}>
                 <PlayerDevice ref={deviceRef} />
                 <PlayerErrors />
             </PlaybackWrapper>

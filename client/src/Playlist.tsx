@@ -21,7 +21,9 @@ function Playlist() {
     }, [])
 
     useEffect(() => {
-        getPresentation();
+        if (playlist) {
+            getPresentation();
+        }
     }, [playlist])
 
     const getPlaylistData = async (): Promise<void> => {
