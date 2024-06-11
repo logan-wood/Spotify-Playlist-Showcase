@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 
 interface PlayerRef {
-    playTrack: (track_id: string, position_ms: number) => void;
+    playTrack: (track_id: string, position_ms: number) => Promise<void>;
     disconnect: () => void;
     togglePlay: () => void;
     nextTrack: (position_ms: number) => void;
@@ -66,15 +66,13 @@ const PlayPresentation = () => {
         }
     }
 
-    const playTrack = async (track_id: string, position_ms: number) => {
-        playerRef.current?.playTrack(track_id, position_ms);
-    }
-
     const preparePresentation = async () => {
         if (!presentationReady || !presentation) {
             console.error('ERROR: not ready to start presentation')
             return;
         }
+
+        console.log(presentation.track_queue)
 
         // set position to first track in presentation
         let queuePosition = 0; // seperate from the state, for queueing objects
@@ -82,9 +80,10 @@ const PlayPresentation = () => {
 
         // play first track
         console.log(`Playing ${current.track_name}`)
-        playTrack(current.track_id, current.from)
+        await playerRef.current?.playTrack(current.track_id, current.from)
         setCurrentImageURL(current.image_url)
         queuePosition++;
+        setPosition(1);
 
         // add all other items to queue
         while (queuePosition < presentation.track_queue.length) {
@@ -101,18 +100,19 @@ const PlayPresentation = () => {
     const nextTrack = () => {
         const presentationLength = presentation?.track_queue.length as number;
 
-        if (position >= presentationLength) {
+        console.log(`at position ${position} out of ${presentationLength}`)
+        if (position >= presentationLength - 1) {
             // reached end of presentation
             playerRef.current?.disconnect();
             setCurrentImageURL('https://media.cnn.com/api/v1/images/stellar/prod/160107100400-monkey-selfie.jpg?q=w_2912,h_1638,x_0,y_0,c_fill');
         }
 
         const nextTrack = presentation?.track_queue[position + 1] as TrackQueueItem;
+        setPosition(position + 1);
 
         // play next track
         playerRef.current?.nextTrack(nextTrack.from);
         setCurrentImageURL(nextTrack.image_url);
-        
     }
 
     return(
@@ -122,7 +122,7 @@ const PlayPresentation = () => {
                 <div>
                     <p>Ready</p>
                     <button onClick={preparePresentation}>Start</button>
-                    <button onClick={nextTrack}>next</button>
+                    <button onClick={() => nextTrack()}>next</button>
                     {currentImageURL != '' && <img src={currentImageURL} alt='Album Art'></img>}
                 </div>
             )}

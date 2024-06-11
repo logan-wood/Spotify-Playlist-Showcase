@@ -180,6 +180,8 @@ export class SpotifyService {
         }
 
         try {
+            console.log(`queueing ${track_id} on ${device_id}`);
+
             const response = await fetch(url, {
                 method: 'POST',
                 headers: { Authorization: `Bearer ${user.access_token}`},
@@ -214,6 +216,8 @@ export class SpotifyService {
             if (device_id) {
                 url.searchParams.append('device_id', device_id); // add param if device is defined - if not, play on user's current device
             }
+
+            console.log(`playing ${body.track_id} on ${device_id}`);
 
             const response = await fetch(url, {
                 method: 'PUT',

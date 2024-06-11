@@ -5,11 +5,11 @@ import PlayerErrors from './PlayerErrors';
 import PlayerController from './PlayerController';
 
 interface PlayerRef {
-    playTrack: (track_id: string, position_ms: number) => void;
+    playTrack: (track_id: string, position_ms: number) => Promise<void>;
 }
 
 interface DeviceRef {
-    playTrack: (track_id: string, position_ms: number) => void;
+    playTrack: (track_id: string, position_ms: number) => Promise<void>;
     addToQueue: (track_id: string) => Promise<void>;
 }
 
@@ -24,11 +24,11 @@ const WebPlayback = forwardRef((props: { token: string, setIsPlaybackReady: (isR
     const playerControllerRef = useRef<PlayerControllerRef>(null);
 
     useImperativeHandle(ref, () => ({ 
-        playTrack: (track_id: string, position_ms: number) => { deviceRef.current?.playTrack(track_id, position_ms) }, 
+        playTrack: async (track_id: string, position_ms: number) => { await deviceRef.current?.playTrack(track_id, position_ms) }, 
         disconnect: () => { playerControllerRef.current?.disconnect() },
         togglePlay: () => { playerControllerRef.current?.togglePlay() },
         nextTrack: (position_ms: number) => { playerControllerRef.current?.nextTrack(position_ms) },
-        addToQueue: (device_id: string) => { deviceRef.current?.addToQueue(device_id) } 
+        addToQueue: async (device_id: string) => { await deviceRef.current?.addToQueue(device_id) } 
     }), []);
 
     const getOAuthToken: Spotify.PlayerInit["getOAuthToken"] = useCallback(

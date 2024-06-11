@@ -2,7 +2,7 @@ import React, { forwardRef, useImperativeHandle, Ref } from "react";
 import { usePlayerDevice } from "react-spotify-web-playback-sdk";
 
 interface DeviceRef {
-    playTrack: (track_id: string, position_ms: number) => void;
+    playTrack: (track_id: string, position_ms: number) => Promise<void>;
     addToQueue: (track_id: string) => Promise<void>;
 }
 
@@ -10,11 +10,11 @@ const PlayerDevice = forwardRef((props: {}, ref: Ref<DeviceRef>) => {
     const device = usePlayerDevice();
 
     useImperativeHandle(ref, () => ({
-        playTrack: (track_id: string, position_ms: number) => { playTrack(track_id, position_ms) },
-        addToQueue: async (track_id: string) => { addToQueue(track_id) }
+        playTrack: async (track_id: string, position_ms: number) => { await playTrack(track_id, position_ms) },
+        addToQueue: async (track_id: string) => { await addToQueue(track_id) }
     }), [device])
     
-    const playTrack = async (track_id: string, position_ms: number) => {
+    const playTrack = async (track_id: string, position_ms: number): Promise<void> => {
         if (device == null) {
             console.error('ERROR: Error starting playback. Device is null');
             return;
@@ -40,7 +40,7 @@ const PlayerDevice = forwardRef((props: {}, ref: Ref<DeviceRef>) => {
         return;
     }
 
-    const addToQueue = async (track_id: string) => {
+    const addToQueue = async (track_id: string): Promise<void> => {
         if (device == null) {
             console.error('ERROR: Error starting playback. Device is null');
             return;
