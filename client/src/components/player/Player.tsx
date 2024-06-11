@@ -1,24 +1,36 @@
-import React, { useState, useEffect, forwardRef, useCallback, useRef, Ref, useImperativeHandle } from 'react';
-import { WebPlaybackSDK, usePlayerDevice, useWebPlaybackSDKReady } from 'react-spotify-web-playback-sdk';
-import PlayerState from './PlayerState';
+import React, { forwardRef, useCallback, useRef, Ref, useImperativeHandle } from 'react';
+import { WebPlaybackSDK } from 'react-spotify-web-playback-sdk';
 import PlayerDevice from './PlayerDevice';
 import PlayerErrors from './PlayerErrors';
+import PlayerController from './PlayerController';
 
 interface PlayerRef {
-    playTrack: (track_id: string, position_ms: number) => void;
+    playTrack: (track_id: string, position_ms: number) => Promise<void>;
 }
 
 interface DeviceRef {
-    playTrack: (track_id: string, position_ms: number) => void;
+    playTrack: (track_id: string, position_ms: number) => Promise<void>;
+    addToQueue: (track_id: string) => Promise<void>;
+    deviceReady: () => boolean;
 }
 
-const WebPlayback = forwardRef((props: { token: string }, ref: Ref<PlayerRef>) => {
-    const deviceRef = useRef<DeviceRef>(null);
+interface PlayerControllerRef {
+    disconnect: () => void;
+    togglePlay: () => void;
+    nextTrack: (position_ms: number) => void;
+}
 
-    useImperativeHandle(ref, () => ({ playTrack: (track_id: string, position_ms: number) => playTrack(track_id, position_ms)}), [])
-    const playTrack = (track_id: string, position_ms: number) => {
-        deviceRef.current?.playTrack(track_id, position_ms);
-    }
+const WebPlayback = forwardRef((props: { token: string, setIsPlaybackReady: (isReady: boolean) => void }, ref: Ref<PlayerRef>) => {
+    const deviceRef = useRef<DeviceRef>(null);
+    const playerControllerRef = useRef<PlayerControllerRef>(null);
+
+    useImperativeHandle(ref, () => ({ 
+        playTrack: async (track_id: string, position_ms: number) => { await deviceRef.current?.playTrack(track_id, position_ms) }, 
+        addToQueue: async (device_id: string) => { await deviceRef.current?.addToQueue(device_id) },
+        disconnect: () => { playerControllerRef.current?.disconnect() },
+        togglePlay: () => { playerControllerRef.current?.togglePlay() },
+        nextTrack: (position_ms: number) => { playerControllerRef.current?.nextTrack(position_ms) },
+    }), []);
 
     const getOAuthToken: Spotify.PlayerInit["getOAuthToken"] = useCallback(
         callback => callback(props.token),
@@ -29,14 +41,14 @@ const WebPlayback = forwardRef((props: { token: string }, ref: Ref<PlayerRef>) =
         <WebPlaybackSDK
             initialDeviceName='Playlist Showcase Player'
             getOAuthToken={getOAuthToken}
-            connectOnInitialized={true}
+            connectOnInitialized={true
+
+            }
             initialVolume={0.5}
         >
-            <div>
-                <PlayerState />
-                <PlayerDevice ref={deviceRef} />
-                <PlayerErrors />
-            </div>
+            <PlayerDevice ref={deviceRef} setIsPlaybackReady={props.setIsPlaybackReady} />
+            <PlayerErrors />
+            <PlayerController ref={playerControllerRef} />
         </WebPlaybackSDK>
     );
 });

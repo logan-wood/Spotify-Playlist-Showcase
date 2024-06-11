@@ -22,5 +22,12 @@ export type Playlist = {
 export type Track = {
     name: string,
     id: string,
-    duration_ms: number
+    duration_ms: number,
+    album: {
+        images: {
+            url: string,
+            width: number,
+            height: number
+        }[]
+    }
 }

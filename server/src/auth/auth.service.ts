@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
 import { Response } from 'express';
 import { UsersService } from 'src/users/users.service';
-import { User } from 'src/users/user.entity';
+import { User } from 'src/users/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SpotifyProfile } from 'src/spotify/spotify.types';
@@ -98,7 +98,8 @@ export class AuthService {
                 // create unique cookie identifier
                 const cookieValue = randomUUID();
                 response.cookie('spotify_cookie', cookieValue, {
-                    maxAge: 2629746000
+                    maxAge: 2629746000,
+                    
                 });
 
                 // create new user in DB

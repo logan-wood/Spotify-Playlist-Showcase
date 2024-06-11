@@ -1,5 +1,5 @@
-import { Injectable, InternalServerErrorException, NotFoundException, Req } from "@nestjs/common";
-import { User } from "src/users/user.entity";
+import { BadRequestException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException, Req } from "@nestjs/common";
+import { User } from "src/users/entities/user.entity";
 import { Playlist, SpotifyProfile, Track } from "./spotify.types";
 import { ConfigService } from "@nestjs/config";
 import { UsersService } from "src/users/users.service";
@@ -139,6 +139,7 @@ export class SpotifyService {
 
             if (response.ok) {
                 const data = await response.json();
+
                 return data;
             }
         } catch(error) {
@@ -147,13 +148,18 @@ export class SpotifyService {
         }
     }
 
-    async getTrack(track_id: string): Promise<Track> {
+    async getTrack(user: User, track_id: string): Promise<Track> {
         try {
-            const response = await fetch(`https://api.spotify.com/v1/tracks/${track_id}`)
+            const response = await fetch(`https://api.spotify.com/v1/tracks/${track_id}`, {
+                headers: { Authorization: `Bearer ${user.access_token}` },
+                credentials: 'include'
+            })
 
             if (response.ok) {
                 const data = await response.json();
                 return data;
+            } else {
+                console.error(`ERROR: Failed to fetch track: ${track_id}. ${response.status}, ${response.status}`)
             }
         } catch(error) {
             console.log('There was an error fetching the playlist: ' + error.message);
@@ -161,33 +167,73 @@ export class SpotifyService {
         }
     }
 
+    async addToQueue(user: User, track_id: string, device_id: string): Promise<void> {
+        this.checkAccessTokenExpired(user);
+
+        if (!track_id) {
+            throw new BadRequestException('ERROR: Invalid track_id parameter supplied');
+        }
+        const url = new URL('https://api.spotify.com/v1/me/player/queue');
+        url.searchParams.append('uri', `spotify:track:${track_id}`);
+        if (device_id) {
+            url.searchParams.append('device_id', device_id); // add param if device is defined - if not, queue on user's current device
+        }
+
+        try {
+            console.log(`queueing ${track_id} on ${device_id}`);
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${user.access_token}`},
+                credentials: 'include',
+            });
+
+            if (!response.ok) {
+                const errorResponse = await response.json();
+                console.error(`ERROR ${response.status}: ${response.statusText}`);
+                console.error(errorResponse);
+                throw new InternalServerErrorException('There was an error starting playback');
+            };
+
+            return;
+        } catch(error) {
+            console.error(error);
+            throw new InternalServerErrorException('There was an error adding to the queue');
+        }
+    }
+
     // PUT to spotify
-    async playTrack(user: User, device_id: string, track_id: string, position_ms: number): Promise<Object> {
+    async playTrack(user: User, body: any, device_id: string): Promise<Object> {
         this.checkAccessTokenExpired(user)
 
         try {
             const data = {
-                uris: ['spotify:track:' + track_id],
-                position_ms: position_ms
+                uris: ['spotify:track:' + body.track_id],
+                position_ms: body.position_ms
             };
 
-            const response = await fetch('https://api.spotify.com/v1/me/player/play?device_id=' + device_id, {
+            const url = new URL('https://api.spotify.com/v1/me/player/play')
+            if (device_id) {
+                url.searchParams.append('device_id', device_id); // add param if device is defined - if not, play on user's current device
+            }
+
+            console.log(`playing ${body.track_id} on ${device_id}`);
+
+            const response = await fetch(url, {
                 method: 'PUT',
                 headers: { Authorization: `Bearer ${user.access_token}`},
                 credentials: 'include',
                 body: JSON.stringify(data)
             });
 
-            // if response is okay, send confirmation message
-            if (response.ok) {
-                return {
-                    message: `Playback started on device ${device_id}`
-                };
-            } else {
-                const error = await response.json();
-                console.error(error);
+            if (!response.ok) {
+                const errorResponse = await response.json();
+                console.error(`ERROR ${response.status}: ${response.statusText}`);
+                console.error(errorResponse);
                 throw new InternalServerErrorException('There was an error starting playback');
-            }
+            };
+
+            return;
         } catch(error) {
             console.error(error);
             throw new InternalServerErrorException('There was an error starting playback');

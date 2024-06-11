@@ -9,20 +9,14 @@ import { UsersService } from './users/users.service';
 import { UsersModule } from './users/users.module';
 import { SpotifyController } from './spotify/spotify.controller';
 import { SpotifyService } from './spotify/spotify.service';
+import { PresentationsModule } from './presentation/presentations.module';
+import { TracksModule } from './track/tracks.module';
+import { dataSourceConfig } from './database.config';
 
 @Module({
   imports: [AuthModule, ConfigModule.forRoot(), TypeOrmModule.forRootAsync({
-    useFactory: () => ({
-      type: 'mysql',
-      host: process.env.DATABASE_HOST,
-      port: parseInt(process.env.DATABASE_PORT, 10),
-      username: process.env.DATABASE_USERNAME,
-      password: process.env.DATABASE_PASSWORD,
-      database: process.env.DATABASE_NAME,
-      autoLoadEntities: true,
-      synchronize: false,
-    })
-  }), UsersModule],
+    useFactory: () => (dataSourceConfig)
+  }), UsersModule, PresentationsModule, TracksModule],
   controllers: [AppController, UsersController, SpotifyController],
   providers: [AppService, UsersService, SpotifyService],
 })

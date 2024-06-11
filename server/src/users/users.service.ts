@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, TableCheck } from "typeorm";
-import { User } from "./user.entity";
+import { User } from "./entities/user.entity";
 import { Request } from "express";
 
 @Injectable()
@@ -17,7 +17,7 @@ export class UsersService {
     findOne(id: number): Promise<User> {
         return this.usersRepository.findOneBy({ id });
     }
-    
+
     /**
      * This function gets the currently logged in user
      * 
@@ -45,8 +45,6 @@ export class UsersService {
     async createOne(user: User) {
         try {
             const createdUser = await this.usersRepository.save(user);
-
-            console.log('Successfully created user: ', createdUser);
 
             return createdUser
         } catch(error) {

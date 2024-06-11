@@ -1,3 +1,6 @@
+import { config } from 'dotenv';
+config();
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
@@ -10,10 +13,12 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const cookieSecret = configService.get<string>('COOKIE_SECRET');
 
-  app.enableCors({ origin: process.env.CLIENT_DOMAIN as string });
+  // middleware
+  app.enableCors({ credentials: true, origin: configService.get<string>('CLIENT_DOMAIN') });
 
-  app.use(cookieParser(cookieSecret, ));
+  app.use(cookieParser(cookieSecret));
 
-  await app.listen(5000);
+  const port = configService.get<number>('PORT')
+  await app.listen(port);
 }
 bootstrap();

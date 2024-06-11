@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Presentation } from '../../presentation/entities/presentation.entity';
+
 
 @Entity()
 export class User {
@@ -12,7 +14,7 @@ export class User {
     username: string;
 
     // set to random for security
-    @Column()
+    @Column({ nullable: true, default: null })
     spotify_cookie: string;
 
     @Column()
@@ -23,4 +25,7 @@ export class User {
 
     @Column()
     refresh_token: string;
+
+    @OneToMany(type => Presentation, presentation => presentation.user)
+    presentations: Presentation[] ;
 }
