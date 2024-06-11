@@ -1,4 +1,4 @@
-import { Controller, Get, Put, Query, Req } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Post, Put, Query, Req } from '@nestjs/common';
 import { SpotifyService } from './spotify.service';
 import { Playlist, SpotifyProfile, Track } from './spotify.types';
 import { User } from 'src/users/entities/user.entity';
@@ -49,10 +49,17 @@ export class SpotifyController {
         return await this.spotifyService.getTrack(currentUser, track_id);
     }
 
-    @Get('play')
-    async play(@Req() request: Request, @Query('device_id') device_id: string, @Query('track_id') track_id: string, @Query('position_ms') position_ms: number): Promise<Object> {
+    @Post('addToQueue')
+    async addToQueue(@Req() request: Request, @Query('track_id') track_id: string, @Query('device_id') device_id: string): Promise<void> {
+        const currentUser: User = await this.usersService.findOneBySpotifyCookie(request);
+
+        return await this.spotifyService.addToQueue(currentUser, track_id, device_id);
+    }
+
+    @Put('play')
+    async play(@Req() request: Request, @Query('device_id') device_id: string): Promise<Object> {
         const currentUser = await this.usersService.findOneBySpotifyCookie(request);
 
-        return await this.spotifyService.playTrack(currentUser, device_id, track_id, position_ms)
+        return await this.spotifyService.playTrack(currentUser, request.body, device_id);
     }
 }
