@@ -1,5 +1,5 @@
-import React, { useState, useEffect, forwardRef, useCallback, useRef, Ref, useImperativeHandle } from 'react';
-import { WebPlaybackSDK, useSpotifyPlayer, useWebPlaybackSDKReady } from 'react-spotify-web-playback-sdk';
+import React, { forwardRef, useCallback, useRef, Ref, useImperativeHandle } from 'react';
+import { WebPlaybackSDK } from 'react-spotify-web-playback-sdk';
 import PlayerDevice from './PlayerDevice';
 import PlayerErrors from './PlayerErrors';
 import PlayerController from './PlayerController';

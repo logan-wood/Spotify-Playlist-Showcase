@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Presentation, TrackQueueItem } from "../../@types/user";
 import WebPlayback from "../player/Player";
 import { useNavigate, useParams } from "react-router-dom";
+import Nav from "../Navigation";
 
 
 interface PlayerRef {
@@ -113,6 +114,7 @@ const PlayPresentation = () => {
 
     return(
         <>
+            <Nav isUserLoggedIn={true}></Nav>
             <div>Presentation...</div>
             {presentationReady && (
                 <div>

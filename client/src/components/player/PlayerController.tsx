@@ -21,9 +21,11 @@ const PlayerController = forwardRef((props: {}, ref: Ref<PlayerControllerRef>) =
         player?.togglePlay();
     }
 
-    const nextTrack = (position_ms: number) => {
-        player?.nextTrack();
-        player?.seek(position_ms);
+    const nextTrack = async (position_ms: number) => {
+        await player?.pause();
+        await player?.nextTrack();
+        await player?.seek(position_ms);
+        await player?.resume();
     }
 
     /**
