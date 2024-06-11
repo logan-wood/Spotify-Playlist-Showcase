@@ -1,17 +1,23 @@
-import React, { forwardRef, useImperativeHandle, Ref } from "react";
+import React, { forwardRef, useImperativeHandle, Ref, useEffect } from "react";
 import { usePlayerDevice } from "react-spotify-web-playback-sdk";
 
 interface DeviceRef {
     playTrack: (track_id: string, position_ms: number) => Promise<void>;
     addToQueue: (track_id: string) => Promise<void>;
+    deviceReady: () => boolean;
 }
 
-const PlayerDevice = forwardRef((props: {}, ref: Ref<DeviceRef>) => {
+const PlayerDevice = forwardRef((props: { setIsPlaybackReady: (isReady: boolean) => void }, ref: Ref<DeviceRef>) => {
     const device = usePlayerDevice();
+
+    useEffect(() => {
+        props.setIsPlaybackReady(device?.status == 'ready');
+    }, [device?.status]);
 
     useImperativeHandle(ref, () => ({
         playTrack: async (track_id: string, position_ms: number) => { await playTrack(track_id, position_ms) },
-        addToQueue: async (track_id: string) => { await addToQueue(track_id) }
+        addToQueue: async (track_id: string) => { await addToQueue(track_id) },
+        deviceReady: () => { return device?.status == "ready" }
     }), [device])
     
     const playTrack = async (track_id: string, position_ms: number): Promise<void> => {

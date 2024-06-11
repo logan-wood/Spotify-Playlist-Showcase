@@ -72,14 +72,11 @@ const PlayPresentation = () => {
             return;
         }
 
-        console.log(presentation.track_queue)
-
         // set position to first track in presentation
         let queuePosition = 0; // seperate from the state, for queueing objects
         let current: TrackQueueItem = presentation.track_queue[position]
 
         // play first track
-        console.log(`Playing ${current.track_name}`)
         await playerRef.current?.playTrack(current.track_id, current.from)
         setCurrentImageURL(current.image_url)
         queuePosition++;
@@ -87,7 +84,6 @@ const PlayPresentation = () => {
         // add all other items to queue
         while (queuePosition < presentation.track_queue.length) {
             const current = presentation.track_queue[queuePosition];
-            console.log(`Adding ${current.track_name} to the queue`);
 
             await playerRef.current?.addToQueue(current.track_id);
 
@@ -99,11 +95,10 @@ const PlayPresentation = () => {
     const nextTrack = () => {
         const presentationLength = presentation?.track_queue.length as number;
 
-        console.log(`at position ${position + 1} (index ${position}) out of ${presentationLength}`)
         if (position >= presentationLength - 1) {
             // reached end of presentation
             playerRef.current?.disconnect();
-            setCurrentImageURL('https://media.cnn.com/api/v1/images/stellar/prod/160107100400-monkey-selfie.jpg?q=w_2912,h_1638,x_0,y_0,c_fill');
+            setCurrentImageURL('https://media.newyorker.com/photos/59095bb86552fa0be682d9d0/master/pass/Monkey-Selfie.jpg');
 
             return;
         }

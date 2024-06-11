@@ -11,6 +11,7 @@ interface PlayerRef {
 interface DeviceRef {
     playTrack: (track_id: string, position_ms: number) => Promise<void>;
     addToQueue: (track_id: string) => Promise<void>;
+    deviceReady: () => boolean;
 }
 
 interface PlayerControllerRef {
@@ -25,10 +26,10 @@ const WebPlayback = forwardRef((props: { token: string, setIsPlaybackReady: (isR
 
     useImperativeHandle(ref, () => ({ 
         playTrack: async (track_id: string, position_ms: number) => { await deviceRef.current?.playTrack(track_id, position_ms) }, 
+        addToQueue: async (device_id: string) => { await deviceRef.current?.addToQueue(device_id) },
         disconnect: () => { playerControllerRef.current?.disconnect() },
         togglePlay: () => { playerControllerRef.current?.togglePlay() },
         nextTrack: (position_ms: number) => { playerControllerRef.current?.nextTrack(position_ms) },
-        addToQueue: async (device_id: string) => { await deviceRef.current?.addToQueue(device_id) } 
     }), []);
 
     const getOAuthToken: Spotify.PlayerInit["getOAuthToken"] = useCallback(
@@ -45,23 +46,11 @@ const WebPlayback = forwardRef((props: { token: string, setIsPlaybackReady: (isR
             }
             initialVolume={0.5}
         >
-            <PlaybackWrapper setIsPlaybackReady={props.setIsPlaybackReady}>
-                <PlayerDevice ref={deviceRef} />
-                <PlayerErrors />
-                <PlayerController ref={playerControllerRef} />
-            </PlaybackWrapper>
+            <PlayerDevice ref={deviceRef} setIsPlaybackReady={props.setIsPlaybackReady} />
+            <PlayerErrors />
+            <PlayerController ref={playerControllerRef} />
         </WebPlaybackSDK>
     );
 });
-
-const PlaybackWrapper = ({ setIsPlaybackReady, children }: { setIsPlaybackReady: (ready: boolean) => void, children: React.ReactNode }) => {
-    const isReady = useWebPlaybackSDKReady();
-
-    useEffect(() => {
-        setIsPlaybackReady(isReady);
-    }, [isReady, setIsPlaybackReady]);
-
-    return <>{children}</>
-}
 
 export default WebPlayback;
