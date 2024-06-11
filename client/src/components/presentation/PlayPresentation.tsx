@@ -83,7 +83,6 @@ const PlayPresentation = () => {
         await playerRef.current?.playTrack(current.track_id, current.from)
         setCurrentImageURL(current.image_url)
         queuePosition++;
-        setPosition(1);
 
         // add all other items to queue
         while (queuePosition < presentation.track_queue.length) {
@@ -100,11 +99,13 @@ const PlayPresentation = () => {
     const nextTrack = () => {
         const presentationLength = presentation?.track_queue.length as number;
 
-        console.log(`at position ${position} out of ${presentationLength}`)
+        console.log(`at position ${position + 1} (index ${position}) out of ${presentationLength}`)
         if (position >= presentationLength - 1) {
             // reached end of presentation
             playerRef.current?.disconnect();
             setCurrentImageURL('https://media.cnn.com/api/v1/images/stellar/prod/160107100400-monkey-selfie.jpg?q=w_2912,h_1638,x_0,y_0,c_fill');
+
+            return;
         }
 
         const nextTrack = presentation?.track_queue[position + 1] as TrackQueueItem;
